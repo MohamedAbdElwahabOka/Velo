@@ -106,11 +106,20 @@ class AppUI(ctk.CTk):
                                           progress_color=ACCENT_COLOR, text_color=TEXT_MAIN, font=ctk.CTkFont(family=FONT_MAIN, size=12))
         self.theme_switch.grid(row=6, column=0, padx=20, pady=(20, 0), sticky="s")
         
+        import shutil
+        ffmpeg_available = shutil.which("ffmpeg") is not None
+        
+        notice_text = "Only download videos\nyou have rights to."
+        notice_color = TEXT_SUB
+        if not ffmpeg_available:
+            notice_text = "⚠️ FFmpeg is missing!\nAudio extraction & clipping\nwill be unavailable."
+            notice_color = ("#DC2626", "#F87171")
+            
         self.notice_label = ctk.CTkLabel(
             self.sidebar_frame, 
-            text="Only download videos\nyou have rights to.",
-            font=ctk.CTkFont(family=FONT_MAIN, size=11),
-            text_color=TEXT_SUB,
+            text=notice_text,
+            font=ctk.CTkFont(family=FONT_MAIN, size=11, weight="bold" if not ffmpeg_available else "normal"),
+            text_color=notice_color,
             justify="center"
         )
         self.notice_label.grid(row=7, column=0, padx=20, pady=20, sticky="s")

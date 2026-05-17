@@ -430,8 +430,9 @@
                         </div>
                     </div>
 
-                    <div class="text-xs leading-6 mt-6 px-2" style="color: var(--muted);">
-                        Download only content you're allowed to save and reuse.
+                    <div class="text-xs leading-5 mt-6 px-2 font-medium" 
+                         :style="appMeta.ffmpeg_available === false ? 'color: #ef4444;' : 'color: var(--muted);'"
+                         x-text="appMeta.ffmpeg_available === false ? '⚠️ FFmpeg is missing! Audio extraction & clipping will be unavailable.' : 'Download only content you\'re allowed to save and reuse.'">
                     </div>
                 </aside>
 

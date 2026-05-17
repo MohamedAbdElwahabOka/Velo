@@ -197,6 +197,7 @@ def index():
 
 @app.route('/api/meta', methods=['GET'])
 def api_meta():
+    import shutil
     return jsonify({
         "name": "Velo",
         "version": APP_VERSION,
@@ -209,6 +210,7 @@ def api_meta():
             "multilingual_ui",
             "reports",
         ],
+        "ffmpeg_available": shutil.which("ffmpeg") is not None
     })
 
 @app.route('/api/settings', methods=['GET', 'POST'])
