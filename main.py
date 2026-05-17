@@ -1,39 +1,36 @@
+import os
 import sys
-import customtkinter as ctk
+from pathlib import Path
+import threading
+import webbrowser
+import time
 
-# Set global appearance before initializing the app
-ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+def setup_environment():
+    # Ensure dependencies and ffmpeg warnings are handled if necessary
+    pass
 
-def check_dependencies():
-    missing = []
-    try:
-        import yt_dlp
-    except ImportError:
-        missing.append("yt-dlp")
-    
-    try:
-        import requests
-    except ImportError:
-        missing.append("requests")
-        
-    try:
-        import PIL
-    except ImportError:
-        missing.append("Pillow")
-        
-    if missing:
-        print(f"Missing required dependencies: {', '.join(missing)}")
-        print("Please install them using: pip install -r requirements.txt")
-        sys.exit(1)
+def start_browser():
+    # Wait a second for the Flask server to start, then open the browser
+    time.sleep(1.5)
+    webbrowser.open('http://127.0.0.1:5000')
 
 def main():
-    check_dependencies()
+    print("Starting Velo Content Engine...")
+    print("The Web Dashboard is booting up. Please wait...")
     
-    from ui import AppUI
+    setup_environment()
     
-    app = AppUI()
-    app.mainloop()
+    # Start the browser thread
+    threading.Thread(target=start_browser, daemon=True).start()
+    
+    # Start the Flask app
+    try:
+        from app import app
+        app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+    except ImportError as e:
+        print(f"Error starting server: {e}")
+        print("Did you forget to install the new web requirements? Run: pip install -r requirements.txt")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

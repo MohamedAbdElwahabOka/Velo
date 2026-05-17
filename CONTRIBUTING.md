@@ -1,6 +1,6 @@
-# Contributing to SnagTube
+# Contributing to Velo
 
-First off, thank you for considering contributing to SnagTube! It's people like you that make SnagTube such a great tool.
+First off, thank you for considering contributing to Velo! It's people like you that make Velo such a great tool.
 
 ## How Can I Contribute?
 
@@ -16,7 +16,7 @@ This section guides you through submitting an enhancement suggestion, including 
 
 - Use a clear and descriptive title for the issue to identify the suggestion.
 - Provide a step-by-step description of the suggested enhancement in as many details as possible.
-- Explain why this enhancement would be useful to most SnagTube users.
+- Explain why this enhancement would be useful to most Velo users.
 
 ### Pull Requests
 - Fill in the required template.

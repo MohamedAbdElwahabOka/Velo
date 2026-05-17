@@ -1,92 +1,100 @@
-# SnagTube 🚀
+# Velo
 
-[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-blueviolet.svg)](https://github.com/TomSchimansky/CustomTkinter)
+Velo is a local media workspace for downloading videos, extracting audio, creating short clips, managing batch queues, and understanding download history through built-in statistics.
 
-**SnagTube** is a sleek, modern desktop application built with Python and CustomTkinter that lets you effortlessly download YouTube videos and audio for offline enjoyment.
+It is built for real-world connections, including unstable and low-bandwidth networks. The web dashboard runs locally in your browser and the backend is powered by Flask and yt-dlp.
 
----
+## Highlights
 
-## ✨ Features
+- Local web dashboard with light/dark mode.
+- Low-bandwidth network modes: Stable, Balanced, Turbo, and Data Saver.
+- Single video, audio-only, batch download, and clip maker workflows.
+- Queue controls: pause, resume, stop, retry failed items, dedupe links, and queue from history.
+- Size estimate before download when the source provides format sizes.
+- Statistics dashboard: total downloads, storage usage, file availability, top channels, formats, and daily activity.
+- Reports export as JSON or CSV.
+- Multilingual UI foundation with English and Arabic support.
+- History search, channel filtering, path copy, reuse URL, and open file/folder actions.
 
-- 🎨 **Modern GUI**: A beautiful, responsive interface with Dark Mode support.
-- 📺 **High Definition**: Download videos in 1080p, 720p, or the best available quality.
-- 🎵 **Audio Mode**: Extract high-quality MP3s with a single click.
-- ⚡ **Background Processing**: Multi-threaded downloads keep the UI smooth and responsive.
-- 📊 **Real-time Stats**: Track download speed, remaining time (ETA), and progress.
-- 🕒 **History**: Quickly access your previous downloads from the built-in history tab.
-- 🛠️ **Playlist Control**: Opt to download only the single video even if it's part of a playlist.
-- 💻 **Cross-Platform**: Seamlessly runs on Windows, macOS, and Linux.
+## Requirements
 
----
+- Python 3.11 or newer.
+- FFmpeg installed and available on PATH.
+- Internet access for downloading media and loading CDN assets used by the dashboard.
 
-## 🛠️ Prerequisites
+Install FFmpeg:
 
-1.  **Python 3.11+**: [Download here](https://www.python.org/downloads/).
-2.  **FFmpeg**: Essential for merging video/audio and processing MP3s.
+```powershell
+winget install ffmpeg
+```
 
-### Installing FFmpeg
+## Setup
 
-- **Windows**: Use `winget install ffmpeg` or download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/).
-- **macOS**: `brew install ffmpeg`
-- **Linux**: `sudo apt install ffmpeg`
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python main.py
+```
 
----
+The app opens at:
 
-## 🚀 Installation
+```text
+http://127.0.0.1:5000
+```
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/yourusername/SnagTube.git
-    cd SnagTube
-    ```
+On Windows you can also run:
 
-2.  **Setup Virtual Environment** (Recommended):
-    ```bash
-    python -m venv venv
-    # Windows:
-    venv\Scripts\activate
-    # macOS/Linux:
-    source venv/bin/activate
-    ```
+```powershell
+.\run_velo.bat
+```
 
-3.  **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## Recommended Settings For Weak Internet
 
----
+- Use the `Low Bandwidth` preset for the smallest practical downloads.
+- Use `Data Saver` when the connection disconnects often.
+- Use `Stable` when downloads fail midway and need more retries.
+- Use `Balanced` when the connection is slow but mostly steady.
+- Use `Turbo` only when the connection can handle parallel fragments.
 
-## 📖 Usage
+## API Overview
 
-1.  Launch the app:
-    ```bash
-    python main.py
-    ```
-2.  **Paste** your YouTube link into the URL field.
-3.  Click **Fetch Info** to see video details.
-4.  Configure your **Format** (Video/Audio) and **Quality**.
-5.  Hit **Download** and let SnagTube handle the rest!
+- `GET /api/meta`: app metadata and feature flags.
+- `GET /api/settings`, `POST /api/settings`: read and save settings.
+- `GET /api/history`, `DELETE /api/history`: read or clear history.
+- `GET /api/stats`: computed statistics from local history.
+- `GET /api/report?format=json|csv`: export reports.
+- `POST /api/estimate`: estimate known source format sizes.
+- `POST /api/fetch`: fetch video info.
+- `POST /api/download`: start a single download.
+- `POST /api/batch`: queue batch downloads.
+- `GET /api/batch/state`: inspect batch state.
+- `POST /api/batch/control`: pause, resume, stop, or retry failed jobs.
+- `POST /api/clip`: generate a clip.
 
----
+## Testing
 
-## 🤝 Contributing
+```powershell
+python -m pytest
+```
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+The current tests focus on settings, history, and statistics helpers.
 
-Check out our [CONTRIBUTING.md](CONTRIBUTING.md) to get started!
+## Packaging Ideas
 
----
+For a professional Windows release, package with PyInstaller:
 
-## 📜 License
+```powershell
+pip install pyinstaller
+pyinstaller --onefile --name Velo main.py
+```
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+After that, add an app icon, signed installer, release notes, and a versioned changelog.
 
----
+## Font Assets
 
-## ⚠️ Disclaimer
+Arabic UI text uses locally bundled Thmanyah Sans `woff2` files from the Thmanyah Font Family package. If you distribute this app, keep the original font license available and confirm the package terms allow your distribution use case.
 
-> [!CAUTION]
-> **This tool is for personal use only.**
-> Please respect YouTube's Terms of Service and copyright laws. Only download content you have permission to access. SnagTube does not bypass DRM or download private/restricted content. The developers are not responsible for misuse of this software.
+## Responsible Use
+
+Only download media you are allowed to save and reuse. Velo does not bypass DRM or private access controls.

@@ -4,6 +4,7 @@ import platform
 import subprocess
 from pathlib import Path
 from io import BytesIO
+from collections import Counter
 try:
     import requests
     from PIL import Image
@@ -28,7 +29,8 @@ def load_settings():
     default_settings = {
         "download_folder": str(Path.home() / "Downloads"),
         "default_quality": "best",
-        "default_format": "video"
+        "default_format": "video",
+        "network_mode": "stable"
     }
     
     settings_path = get_settings_path()
@@ -88,6 +90,58 @@ def add_to_history(video_info, filepath):
     except Exception as e:
         print(f"Error saving history: {e}")
 
+def clear_history():
+    """Remove all saved history entries."""
+    try:
+        with open(get_history_path(), 'w', encoding='utf-8') as f:
+            json.dump([], f, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error clearing history: {e}")
+        return False
+
+def get_history_stats():
+    """Build lightweight analytics from saved history and local files."""
+    history = load_history()
+    channels = Counter()
+    extensions = Counter()
+    days = Counter()
+    total_bytes = 0
+    existing_files = 0
+    missing_files = 0
+
+    for item in history:
+        channel = item.get("channel") or "Unknown Channel"
+        channels[channel] += 1
+
+        timestamp = item.get("timestamp", "")
+        if timestamp:
+            days[timestamp[:10]] += 1
+
+        filepath = item.get("filepath") or ""
+        suffix = Path(filepath).suffix.lower().lstrip(".") or "unknown"
+        extensions[suffix] += 1
+
+        path = Path(filepath)
+        if path.exists() and path.is_file():
+            existing_files += 1
+            try:
+                total_bytes += path.stat().st_size
+            except OSError:
+                pass
+        elif filepath:
+            missing_files += 1
+
+    return {
+        "total_items": len(history),
+        "existing_files": existing_files,
+        "missing_files": missing_files,
+        "total_bytes": total_bytes,
+        "channels": channels.most_common(8),
+        "formats": extensions.most_common(),
+        "daily": sorted(days.items(), reverse=True)[:14],
+    }
+
 def fetch_thumbnail(url):
     """Fetch an image from URL and return a PIL Image object."""
     try:
@@ -137,4 +191,40 @@ def open_file(filepath):
         return True
     except Exception as e:
         print(f"Error opening file: {e}")
+        return False
+
+def vtt_to_md(vtt_filepath, video_info=None):
+    """Parses a VTT file and creates a clean Markdown file."""
+    vtt_path = Path(vtt_filepath)
+    if not vtt_path.exists():
+        return False
+        
+    md_path = vtt_path.with_suffix('.md')
+    try:
+        with open(vtt_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            
+        clean_lines = []
+        for line in lines:
+            line = line.strip()
+            # Skip VTT headers, empty lines, and timestamp lines
+            if not line or line.startswith('WEBVTT') or line.startswith('Kind:') or line.startswith('Language:') or '-->' in line:
+                continue
+            # Basic deduplication for auto-subs which repeat lines
+            if clean_lines and clean_lines[-1] == line:
+                continue
+            clean_lines.append(line)
+            
+        with open(md_path, 'w', encoding='utf-8') as f:
+            if video_info:
+                f.write(f"# {video_info.get('title', 'Transcript')}\n\n")
+                f.write(f"**Channel:** {video_info.get('uploader', 'Unknown')}\n")
+                f.write(f"**URL:** {video_info.get('webpage_url', '')}\n\n")
+                f.write("---\n\n")
+            
+            f.write(" ".join(clean_lines))
+            
+        return str(md_path)
+    except Exception as e:
+        print(f"Error converting VTT to MD: {e}")
         return False

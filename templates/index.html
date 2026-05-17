@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velo - Media Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        arabic: ['Thmanyah Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @font-face {
+            font-family: 'Thmanyah Sans';
+            src: url('/static/fonts/thmanyah/thmanyahsans-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Thmanyah Sans';
+            src: url('/static/fonts/thmanyah/thmanyahsans-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Thmanyah Sans';
+            src: url('/static/fonts/thmanyah/thmanyahsans-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Thmanyah Sans';
+            src: url('/static/fonts/thmanyah/thmanyahsans-Black.woff2') format('woff2');
+            font-weight: 800 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --bg: #f5efe4;
+            --bg-elevated: rgba(255, 252, 246, 0.88);
+            --panel: rgba(255, 250, 242, 0.78);
+            --panel-strong: #fffaf2;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --line: rgba(107, 114, 128, 0.18);
+            --accent: #ff7a18;
+            --accent-2: #ffb347;
+            --accent-soft: rgba(255, 122, 24, 0.12);
+            --success: #0f9d7a;
+            --danger: #dc2626;
+            --shadow: 0 24px 60px rgba(118, 78, 18, 0.12);
+        }
+
+        .dark {
+            --bg: #10161f;
+            --bg-elevated: rgba(17, 24, 39, 0.78);
+            --panel: rgba(20, 28, 39, 0.74);
+            --panel-strong: #18202c;
+            --text: #f8fafc;
+            --muted: #9aa4b2;
+            --line: rgba(255, 255, 255, 0.08);
+            --accent: #ff914d;
+            --accent-2: #ffd166;
+            --accent-soft: rgba(255, 145, 77, 0.14);
+            --success: #34d399;
+            --danger: #f87171;
+            --shadow: 0 32px 90px rgba(0, 0, 0, 0.35);
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255, 145, 77, 0.18), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.16), transparent 24%),
+                linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, #ffffff 12%) 100%);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        [dir="rtl"] body,
+        body[dir="rtl"] {
+            font-family: 'Thmanyah Sans', sans-serif;
+            letter-spacing: 0;
+        }
+
+        .app-shell {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        }
+
+        .glass-panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .soft-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--line);
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+        }
+
+        .accent-panel {
+            background:
+                linear-gradient(135deg, rgba(255, 145, 77, 0.18), rgba(255, 209, 102, 0.08)),
+                var(--bg-elevated);
+            border: 1px solid rgba(255, 145, 77, 0.22);
+        }
+
+        .title-display {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.04em;
+        }
+
+        body[dir="rtl"] .title-display {
+            font-family: 'Thmanyah Sans', sans-serif;
+            letter-spacing: 0;
+            line-height: 1.25;
+        }
+
+        body[dir="rtl"] button,
+        body[dir="rtl"] input,
+        body[dir="rtl"] select,
+        body[dir="rtl"] textarea,
+        body[dir="rtl"] label,
+        body[dir="rtl"] .soft-panel,
+        body[dir="rtl"] .glass-panel,
+        body[dir="rtl"] .metric-chip {
+            font-family: 'Thmanyah Sans', sans-serif;
+        }
+
+        body[dir="rtl"] .uppercase,
+        body[dir="rtl"] [class*="tracking-"] {
+            letter-spacing: 0;
+        }
+
+        body[dir="rtl"] .fa-solid,
+        body[dir="rtl"] .fa-regular,
+        body[dir="rtl"] .fa-brands {
+            margin-left: 0.5rem;
+            margin-right: 0;
+        }
+
+        body[dir="rtl"] .mr-2 {
+            margin-right: 0;
+            margin-left: 0.5rem;
+        }
+
+        body[dir="rtl"] .ml-1,
+        body[dir="rtl"] .ml-2 {
+            margin-left: 0;
+            margin-right: 0.25rem;
+        }
+
+        body[dir="rtl"] .text-left {
+            text-align: right;
+        }
+
+        .input-shell,
+        .select-shell,
+        .textarea-shell {
+            width: 100%;
+            border-radius: 1rem;
+            border: 1px solid var(--line);
+            background: color-mix(in srgb, var(--panel-strong) 88%, transparent 12%);
+            color: var(--text);
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .input-shell,
+        .select-shell {
+            min-height: 3.25rem;
+            padding: 0.85rem 1rem;
+        }
+
+        .textarea-shell {
+            padding: 1rem;
+            resize: vertical;
+        }
+
+        .input-shell:focus,
+        .select-shell:focus,
+        .textarea-shell:focus {
+            outline: none;
+            border-color: rgba(255, 145, 77, 0.55);
+            box-shadow: 0 0 0 4px rgba(255, 145, 77, 0.12);
+        }
+
+        .btn-main {
+            border-radius: 1rem;
+            padding: 0.9rem 1.2rem;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #111827;
+            box-shadow: 0 18px 32px rgba(255, 145, 77, 0.24);
+        }
+
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 24px 38px rgba(255, 145, 77, 0.3);
+        }
+
+        .btn-main:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            border-radius: 1rem;
+            padding: 0.9rem 1rem;
+            font-weight: 700;
+            background: color-mix(in srgb, var(--panel-strong) 88%, transparent 12%);
+            border: 1px solid var(--line);
+            color: var(--text);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            background: color-mix(in srgb, var(--panel-strong) 96%, transparent 4%);
+        }
+
+        .btn-danger {
+            border-radius: 1rem;
+            padding: 0.9rem 1rem;
+            font-weight: 800;
+            border: 1px solid rgba(220, 38, 38, 0.24);
+            color: var(--danger);
+            background: rgba(220, 38, 38, 0.08);
+        }
+
+        .metric-chip {
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: color-mix(in srgb, var(--panel-strong) 92%, transparent 8%);
+        }
+
+        .toggle-track {
+            width: 2.75rem;
+            height: 1.5rem;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.35);
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .toggle-track.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 0.18rem;
+            left: 0.18rem;
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 999px;
+            background: white;
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-track.active .toggle-thumb {
+            transform: translateX(1.22rem);
+        }
+
+        .progress-rail {
+            background: rgba(148, 163, 184, 0.16);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        .nav-item-active {
+            background: linear-gradient(135deg, rgba(255, 145, 77, 0.18), rgba(255, 209, 102, 0.1));
+            border: 1px solid rgba(255, 145, 77, 0.22);
+            color: var(--text);
+        }
+
+        .nav-item-idle {
+            color: var(--muted);
+        }
+
+        .nav-item-idle:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        @media (max-width: 1024px) {
+            .app-shell {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body x-data="app()" x-init="init()" :class="{ 'dark': isDark }" :dir="language === 'ar' ? 'rtl' : 'ltr'" :lang="language">
+    <div class="min-h-screen p-3 md:p-5">
+        <div class="app-shell glass-panel min-h-[calc(100vh-1.5rem)] rounded-[2rem] overflow-hidden">
+            <div class="grid min-h-[calc(100vh-1.5rem)] lg:grid-cols-[290px_minmax(0,1fr)]">
+                <aside class="border-b lg:border-b-0 lg:border-r p-5 md:p-6" style="border-color: var(--line);">
+                    <div class="flex items-center justify-between gap-4 mb-8">
+                        <div class="flex items-center gap-4">
+                            <div class="h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black shadow-lg"
+                                 style="background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #111827;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div>
+                                <div class="title-display text-2xl font-bold">Velo</div>
+                                <div class="text-sm" style="color: var(--muted);">Download, batch, clip, organize</div>
+                                <div class="text-xs mt-1" style="color: var(--muted);" x-show="appMeta.version">v<span x-text="appMeta.version"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accent-panel rounded-[1.5rem] p-4 mb-6">
+                        <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Workspace</div>
+                        <div class="title-display text-xl font-bold mt-2">Built for fast content capture</div>
+                        <p class="mt-2 text-sm leading-6" style="color: var(--muted);">
+                            One place to fetch info, queue downloads, create clips, and reopen your saved files.
+                        </p>
+                    </div>
+
+                    <nav class="space-y-2">
+                        <template x-for="tab in tabs" :key="tab.id">
+                            <button
+                                @click="currentTab = tab.id"
+                                class="w-full rounded-2xl px-4 py-3.5 flex items-center gap-4 text-left transition-all duration-200"
+                                :class="currentTab === tab.id ? 'nav-item-active' : 'nav-item-idle'">
+                                <div class="h-11 w-11 rounded-xl flex items-center justify-center text-base"
+                                     :style="currentTab === tab.id ? 'background: var(--accent-soft);' : 'background: rgba(148,163,184,0.10);'">
+                                    <i :class="tab.icon"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold" x-text="tab.name"></div>
+                                    <div class="text-xs mt-0.5" style="color: var(--muted);" x-text="tab.subtitle"></div>
+                                </div>
+                            </button>
+                        </template>
+                    </nav>
+
+                    <div class="soft-panel rounded-[1.5rem] p-4 mt-6">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <div class="font-bold" x-text="t('appearance')"></div>
+                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('appearanceDesc')"></div>
+                            </div>
+                            <button @click="isDark = !isDark; toggleTheme()" class="btn-secondary !py-2.5 !px-3 min-w-[92px]">
+                                <i class="fa-solid" :class="isDark ? 'fa-moon' : 'fa-sun'"></i>
+                                <span x-text="isDark ? t('dark') : t('light')"></span>
+                            </button>
+                        </div>
+                        <div class="mt-4">
+                            <label class="text-sm font-bold block mb-2" x-text="t('language')"></label>
+                            <select x-model="language" @change="setLanguage(language)" class="select-shell">
+                                <option value="en">English</option>
+                                <option value="ar">العربية</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <div class="soft-panel rounded-2xl p-4">
+                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('history')"></div>
+                            <div class="title-display text-2xl font-bold mt-2" x-text="history.length"></div>
+                            <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('savedItems')"></div>
+                        </div>
+                        <div class="soft-panel rounded-2xl p-4">
+                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('queue')"></div>
+                            <div class="title-display text-2xl font-bold mt-2" x-text="uniqueBatchUrls.length"></div>
+                            <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('batchLinks')"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs leading-6 mt-6 px-2" style="color: var(--muted);">
+                        Download only content you're allowed to save and reuse.
+                    </div>
+                </aside>
+
+                <main class="min-w-0 overflow-y-auto p-5 md:p-8 lg:p-10">
+                    <div class="max-w-6xl mx-auto">
+                        <header class="mb-8">
+                            <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-5">
+                                <div>
+                                    <div class="text-xs font-bold uppercase tracking-[0.3em] mb-3" style="color: var(--muted);" x-text="t('workspace')"></div>
+                                    <h1 class="title-display text-4xl md:text-5xl font-bold leading-none" x-text="tabs.find(t => t.id === currentTab).title"></h1>
+                                    <p class="mt-3 text-base md:text-lg max-w-2xl" style="color: var(--muted);" x-text="tabs.find(t => t.id === currentTab).description"></p>
+                                </div>
+                                <div class="flex flex-wrap gap-3">
+                                    <div class="metric-chip px-4 py-3 text-sm">
+                                        <div class="font-semibold" x-text="t('folder')"></div>
+                                        <div class="truncate max-w-[220px]" style="color: var(--muted);" x-text="serverSettings.download_folder || t('notSet')"></div>
+                                    </div>
+                                    <div class="metric-chip px-4 py-3 text-sm">
+                                        <div class="font-semibold" x-text="t('mode')"></div>
+                                        <div style="color: var(--muted);" x-text="settings.format === 'audio' ? t('audioWorkflow') : t('videoWorkflow')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <section x-show="currentTab === 'home'" x-transition.opacity.duration.300ms class="space-y-6">
+                            <div class="grid xl:grid-cols-[minmax(0,1.4fr)_360px] gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="flex items-start justify-between gap-4 mb-5">
+                                        <div>
+                                            <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('primaryDownload')"></div>
+                                            <h2 class="title-display text-2xl font-bold mt-2" x-text="t('pasteBuild')"></h2>
+                                        </div>
+                                        <div class="metric-chip px-4 py-2.5 text-sm font-semibold">
+                                            <i class="fa-brands fa-youtube mr-2"></i> Link Analyzer
+                                        </div>
+                                    </div>
+
+                                    <div class="grid lg:grid-cols-[minmax(0,1fr)_auto_auto] gap-3">
+                                        <input type="text" x-model="url" :placeholder="t('urlPlaceholder')" class="input-shell">
+                                        <button @click="pasteUrl()" class="btn-secondary"><i class="fa-regular fa-paste mr-2"></i><span x-text="t('paste')"></span></button>
+                                        <button @click="fetchInfo()" :disabled="isFetching || !url" class="btn-main">
+                                            <i class="fa-solid" :class="isFetching ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'"></i>
+                                            <span x-text="isFetching ? t('analyzing') : t('fetchInfo')"></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-5 flex flex-wrap gap-3">
+                                        <template x-for="preset in presets" :key="preset.id">
+                                            <button @click="applyPreset(preset)" class="btn-secondary !py-2.5 text-sm">
+                                                <i :class="preset.icon + ' mr-2'"></i><span x-text="preset.name"></span>
+                                            </button>
+                                        </template>
+                                        <button @click="addCurrentToBatch()" :disabled="!url" class="btn-secondary !py-2.5 text-sm">
+                                            <i class="fa-solid fa-plus mr-2"></i><span x-text="t('addToBatch')"></span>
+                                        </button>
+                                        <button @click="saveCurrentAsDefault()" class="btn-secondary !py-2.5 text-sm">
+                                            <i class="fa-regular fa-star mr-2"></i><span x-text="t('saveDefault')"></span>
+                                        </button>
+                                        <button @click="estimateDownload()" :disabled="!url || estimateStatus === 'loading'" class="btn-secondary !py-2.5 text-sm">
+                                            <i class="fa-solid" :class="estimateStatus === 'loading' ? 'fa-spinner fa-spin mr-2' : 'fa-scale-balanced mr-2'"></i><span x-text="t('estimateSize')"></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="grid md:grid-cols-3 gap-3 mt-5">
+                                        <div class="metric-chip px-4 py-3">
+                                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('format')"></div>
+                                            <div class="font-bold mt-1" x-text="settings.format === 'audio' ? 'Audio / MP3' : 'Video / MP4'"></div>
+                                        </div>
+                                        <div class="metric-chip px-4 py-3">
+                                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('quality')"></div>
+                                            <div class="font-bold mt-1" x-text="settings.quality"></div>
+                                        </div>
+                                        <div class="metric-chip px-4 py-3">
+                                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('status')"></div>
+                                            <div class="font-bold mt-1" x-text="downloadStatus === 'idle' ? t('ready') : downloadMessage || t('working')"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-5 soft-panel rounded-2xl p-4">
+                                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
+                                            <div>
+                                                <div class="font-bold" x-text="t('networkMode')"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="networkModeLabel"></div>
+                                            </div>
+                                            <select x-model="settings.network_mode" class="select-shell lg:max-w-[260px]">
+                                                <option value="stable">Stable connection</option>
+                                                <option value="balanced">Balanced</option>
+                                                <option value="turbo">Turbo fragments</option>
+                                                <option value="data_saver">Data saver</option>
+                                            </select>
+                                        </div>
+                                        <div class="grid md:grid-cols-4 gap-2">
+                                            <template x-for="mode in networkModes" :key="mode.id">
+                                                <button @click="settings.network_mode = mode.id" class="btn-secondary !py-2.5 text-sm"
+                                                        :style="settings.network_mode === mode.id ? 'background: var(--accent-soft); border-color: rgba(255,145,77,0.28);' : ''">
+                                                    <i :class="mode.icon + ' mr-2'"></i><span x-text="mode.short"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-5 soft-panel rounded-2xl p-4" x-show="estimateStatus !== 'idle'">
+                                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                                            <div>
+                                                <div class="font-bold" x-text="t('sizeEstimate')"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="estimateMessage"></div>
+                                            </div>
+                                            <button @click="estimateDownload()" class="btn-secondary !py-2.5 text-sm" :disabled="estimateStatus === 'loading'">
+                                                <i class="fa-solid fa-rotate mr-2"></i><span x-text="t('refresh')"></span>
+                                            </button>
+                                        </div>
+                                        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-2 mt-4" x-show="estimate.smallest?.length">
+                                            <template x-for="item in estimate.smallest" :key="item.format_id + '-' + item.filesize">
+                                                <div class="metric-chip px-3 py-2 text-sm">
+                                                    <div class="font-bold" x-text="item.height ? item.height + 'p' : (item.format_note || item.ext || 'media')"></div>
+                                                    <div style="color: var(--muted);" x-text="formatBytes(item.filesize)"></div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel rounded-[1.75rem] p-5 md:p-6">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('quickSettings')"></div>
+                                    <div class="space-y-4 mt-5">
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2" x-text="t('outputType')"></label>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <button @click="settings.format = 'video'" class="btn-secondary"
+                                                        :style="settings.format === 'video' ? 'background: var(--accent-soft); border-color: rgba(255,145,77,0.28);' : ''">
+                                                    <span x-text="t('video')"></span>
+                                                </button>
+                                                <button @click="settings.format = 'audio'" class="btn-secondary"
+                                                        :style="settings.format === 'audio' ? 'background: var(--accent-soft); border-color: rgba(255,145,77,0.28);' : ''">
+                                                    <span x-text="t('audio')"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2" x-text="t('quality')"></label>
+                                            <select x-model="settings.quality" class="select-shell" :disabled="settings.format === 'audio'">
+                                                <template x-for="q in availableQualities" :key="q">
+                                                    <option :value="q" x-text="q"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold" x-text="t('singleVideo')"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('singleVideoDesc')"></div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.single_video ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.single_video" class="hidden">
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)] gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7" x-show="videoInfo" x-transition.opacity>
+                                    <div class="flex flex-col lg:flex-row gap-6">
+                                        <div class="w-full lg:w-[300px] shrink-0">
+                                            <div class="aspect-video rounded-[1.35rem] overflow-hidden soft-panel">
+                                                <img :src="videoInfo?.thumbnail || ''" alt="" class="w-full h-full object-cover">
+                                            </div>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-wrap gap-2 mb-4">
+                                                <span class="metric-chip px-3 py-1.5 text-sm font-semibold">
+                                                    <i class="fa-solid fa-circle-check mr-2" style="color: var(--success);"></i>Ready
+                                                </span>
+                                                <span class="metric-chip px-3 py-1.5 text-sm" x-show="videoInfo?.duration">
+                                                    <i class="fa-regular fa-clock mr-2"></i><span x-text="formatTime(videoInfo?.duration)"></span>
+                                                </span>
+                                            </div>
+                                            <h3 class="title-display text-3xl font-bold leading-tight break-words" x-text="videoInfo?.title"></h3>
+                                            <p class="mt-3 text-base" style="color: var(--muted);" x-text="videoInfo?.uploader || 'Unknown Channel'"></p>
+                                            <p class="mt-6 text-sm leading-7" style="color: var(--muted);">
+                                                Fetch complete. Review the settings on the right, then start the download when you're happy with the format.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-6">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('powerFeatures')"></div>
+                                    <div class="space-y-4 mt-5">
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold">SponsorBlock</div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('sponsorDesc')"></div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.sponsorblock ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.sponsorblock" class="hidden">
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold" x-text="t('embedMetadata')"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('embedDesc')"></div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.embed_metadata ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.embed_metadata" class="hidden">
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold" x-text="t('transcript')"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('transcriptDesc')"></div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.download_transcript ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.download_transcript" class="hidden">
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass-panel rounded-[1.75rem] p-5 md:p-7" x-show="videoInfo" x-transition.opacity>
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+                                    <div>
+                                        <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('processing')"></div>
+                                        <h3 class="title-display text-2xl font-bold mt-2" x-text="t('startWorkflow')"></h3>
+                                    </div>
+                                    <div class="metric-chip px-4 py-3 text-sm" x-show="downloadStatus !== 'idle'">
+                                        <div class="font-semibold" x-text="t('currentStatus')"></div>
+                                        <div style="color: var(--muted);" x-text="downloadMessage || t('working')"></div>
+                                    </div>
+                                </div>
+
+                                <div x-show="downloadStatus !== 'idle'" class="mb-6">
+                                    <div class="flex flex-wrap items-center justify-between gap-3 text-sm mb-3">
+                                        <span class="font-bold" x-text="downloadMessage"></span>
+                                        <div class="flex gap-3" style="color: var(--muted);">
+                                            <span x-show="downloadStatus === 'downloading'" x-text="downloadPercent + '%'"></span>
+                                            <span x-show="downloadSpeed" x-text="downloadSpeed"></span>
+                                            <span x-show="downloadEta" x-text="downloadEta"></span>
+                                        </div>
+                                    </div>
+                                    <div class="progress-rail h-3">
+                                        <div class="progress-bar h-full transition-all duration-300" :style="`width: ${downloadPercent}%`"></div>
+                                    </div>
+                                </div>
+
+                                <div class="grid md:grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-3">
+                                    <button @click="startDownload()" x-show="downloadStatus === 'idle' || downloadStatus === 'error' || downloadStatus === 'success'" class="btn-main">
+                                        <i class="fa-solid fa-download mr-2"></i><span x-text="t('startDownload')"></span>
+                                    </button>
+                                    <button @click="cancelDownload()" x-show="downloadStatus === 'downloading' || downloadStatus === 'processing'" class="btn-danger">
+                                        <i class="fa-solid fa-ban mr-2"></i><span x-text="t('cancel')"></span>
+                                    </button>
+                                    <button @click="openFile(lastDownloadedFile, false)" x-show="downloadStatus === 'success'" class="btn-secondary">
+                                        <i class="fa-regular fa-file mr-2"></i><span x-text="t('openFile')"></span>
+                                    </button>
+                                    <button @click="openFile(lastDownloadedFile, true)" x-show="downloadStatus === 'success'" class="btn-secondary">
+                                        <i class="fa-regular fa-folder-open mr-2"></i><span x-text="t('openFolder')"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section x-show="currentTab === 'batch'" x-transition.opacity.duration.300ms class="space-y-6">
+                            <div class="grid xl:grid-cols-[minmax(0,1.2fr)_360px] gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="flex items-start justify-between gap-4 mb-5">
+                                        <div>
+                                            <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Batch Queue</div>
+                                            <h2 class="title-display text-2xl font-bold mt-2">Drop in multiple links at once</h2>
+                                        </div>
+                                        <div class="metric-chip px-4 py-3 text-sm">
+                                            <span class="font-bold" x-text="uniqueBatchUrls.length"></span>
+                                            <span class="ml-2" style="color: var(--muted);">links detected</span>
+                                        </div>
+                                    </div>
+                                    <textarea x-model="batch.urlsRaw" rows="10" placeholder="https://youtube.com/...&#10;https://youtube.com/..." class="textarea-shell font-mono text-sm"></textarea>
+                                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                                        <div class="flex flex-wrap gap-2 text-sm" style="color: var(--muted);">
+                                            <span class="metric-chip px-3 py-2"><span class="font-bold" x-text="uniqueBatchUrls.length"></span> unique</span>
+                                            <span class="metric-chip px-3 py-2"><span class="font-bold" x-text="duplicateBatchCount"></span> duplicates</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button @click="cleanBatchQueue()" class="btn-secondary !py-2.5 text-sm">
+                                                <i class="fa-solid fa-broom mr-2"></i>Dedupe
+                                            </button>
+                                            <button @click="addCurrentToBatch()" :disabled="!url" class="btn-secondary !py-2.5 text-sm">
+                                                <i class="fa-solid fa-link mr-2"></i>Add Current
+                                            </button>
+                                            <button @click="clearBatchQueue()" class="btn-secondary !py-2.5 text-sm">
+                                                <i class="fa-regular fa-trash-can mr-2"></i>Clear
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel rounded-[1.75rem] p-5 md:p-6">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Batch Preset</div>
+                                    <div class="space-y-4 mt-5">
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Format</label>
+                                            <select x-model="settings.format" class="select-shell">
+                                                <option value="video">Video (MP4)</option>
+                                                <option value="audio">Audio (MP3)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Quality</label>
+                                            <select x-model="settings.quality" class="select-shell" :disabled="settings.format === 'audio'">
+                                                <template x-for="q in availableQualities" :key="q">
+                                                    <option :value="q" x-text="q"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Network</label>
+                                            <select x-model="settings.network_mode" class="select-shell">
+                                                <template x-for="mode in networkModes" :key="mode.id">
+                                                    <option :value="mode.id" x-text="mode.name"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <button @click="startBatch()" :disabled="batch.status === 'running' || uniqueBatchUrls.length === 0" class="btn-main w-full">
+                                            <i class="fa-solid fa-layer-group mr-2"></i>Start Batch
+                                        </button>
+                                        <div class="soft-panel rounded-2xl p-4" x-show="history.length">
+                                            <div class="font-bold mb-3">Queue from history</div>
+                                            <div class="space-y-2 max-h-44 overflow-y-auto pr-1">
+                                                <template x-for="item in history.slice(0, 5)" :key="item.filepath">
+                                                    <button @click="addHistoryToBatch(item)" class="w-full text-left rounded-xl px-3 py-2 hover:bg-white/10 transition">
+                                                        <div class="font-semibold truncate text-sm" x-text="item.title"></div>
+                                                        <div class="text-xs truncate" style="color: var(--muted);" x-text="item.channel"></div>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass-panel rounded-[1.75rem] p-5 md:p-7" x-show="batch.status !== 'idle' || batch.logs.length" x-transition.opacity>
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+                                    <div>
+                                        <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Queue Progress</div>
+                                        <h3 class="title-display text-2xl font-bold mt-2">Monitor the batch run</h3>
+                                    </div>
+                                    <div class="metric-chip px-4 py-3 text-sm">
+                                        <span class="font-bold" x-text="`${batch.currentIndex} / ${batch.totalCount || uniqueBatchUrls.length}`"></span>
+                                        <span class="ml-2" style="color: var(--muted);">items</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid md:grid-cols-4 gap-3 mb-5">
+                                    <button @click="controlBatch('pause')" :disabled="batchState.paused || !batchState.running" class="btn-secondary">
+                                        <i class="fa-solid fa-pause mr-2"></i><span x-text="t('pause')"></span>
+                                    </button>
+                                    <button @click="controlBatch('resume')" :disabled="!batchState.paused" class="btn-secondary">
+                                        <i class="fa-solid fa-play mr-2"></i><span x-text="t('resume')"></span>
+                                    </button>
+                                    <button @click="controlBatch('stop')" :disabled="!batchState.running" class="btn-danger">
+                                        <i class="fa-solid fa-stop mr-2"></i><span x-text="t('stop')"></span>
+                                    </button>
+                                    <button @click="controlBatch('retry_failed')" :disabled="(batchState.failed_jobs || []).length === 0" class="btn-secondary">
+                                        <i class="fa-solid fa-rotate-left mr-2"></i><span x-text="t('retryFailed')"></span>
+                                    </button>
+                                </div>
+
+                                <div class="grid md:grid-cols-4 gap-3 mb-5">
+                                    <div class="metric-chip px-4 py-3 text-sm"><span class="font-bold" x-text="batchState.completed || 0"></span> <span style="color: var(--muted);" x-text="t('completed')"></span></div>
+                                    <div class="metric-chip px-4 py-3 text-sm"><span class="font-bold" x-text="batchState.failed || 0"></span> <span style="color: var(--muted);" x-text="t('failed')"></span></div>
+                                    <div class="metric-chip px-4 py-3 text-sm"><span class="font-bold" x-text="batchState.queued || 0"></span> <span style="color: var(--muted);" x-text="t('queued')"></span></div>
+                                    <div class="metric-chip px-4 py-3 text-sm"><span class="font-bold" x-text="batchState.paused ? t('paused') : (batchState.running ? t('running') : t('idle'))"></span></div>
+                                </div>
+
+                                <div class="mb-6" x-show="batch.status !== 'idle'">
+                                    <div class="flex justify-between gap-3 text-sm mb-3">
+                                        <span class="font-bold truncate pr-3" x-text="batch.currentUrl || 'Waiting for next item'"></span>
+                                        <span style="color: var(--muted);" x-text="batch.percent"></span>
+                                    </div>
+                                    <div class="progress-rail h-3">
+                                        <div class="progress-bar h-full transition-all duration-300" :style="`width: ${batch.percent}`"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3 max-h-[340px] overflow-y-auto pr-1">
+                                    <template x-for="log in batch.logs" :key="log.id">
+                                        <div class="soft-panel rounded-2xl px-4 py-3 flex items-center justify-between gap-4">
+                                            <div class="min-w-0">
+                                                <div class="font-semibold truncate" x-text="log.msg"></div>
+                                            </div>
+                                            <div class="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                                                 :style="log.type === 'success' ? 'background: rgba(15,157,122,0.14); color: var(--success);' : 'background: rgba(220,38,38,0.12); color: var(--danger);'">
+                                                <i class="fa-solid" :class="log.type === 'success' ? 'fa-check' : 'fa-xmark'"></i>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section x-show="currentTab === 'clip'" x-transition.opacity.duration.300ms class="space-y-6">
+                            <div class="grid xl:grid-cols-[minmax(0,1.25fr)_340px] gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Clip Builder</div>
+                                    <h2 class="title-display text-2xl font-bold mt-2">Turn a long video into a short-form asset</h2>
+
+                                    <div class="grid gap-5 mt-6">
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Source URL</label>
+                                            <input type="text" x-model="clip.url" placeholder="https://youtube.com/..." class="input-shell">
+                                        </div>
+
+                                        <div class="grid md:grid-cols-2 gap-5">
+                                            <div>
+                                                <label class="text-sm font-bold block mb-2">Start time (seconds)</label>
+                                                <input type="number" x-model="clip.start" placeholder="120" class="input-shell">
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-bold block mb-2">End time (seconds)</label>
+                                                <input type="number" x-model="clip.end" placeholder="150" class="input-shell">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex flex-wrap items-center justify-between gap-3">
+                                            <div class="metric-chip px-4 py-3 text-sm">
+                                                <span class="font-bold">Duration:</span>
+                                                <span style="color: var(--muted);" x-text="clipDuration > 0 ? formatTime(clipDuration) : 'Set start and end'"></span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-2">
+                                                <button @click="setClipDuration(15)" class="btn-secondary !py-2.5 text-sm">15s</button>
+                                                <button @click="setClipDuration(30)" class="btn-secondary !py-2.5 text-sm">30s</button>
+                                                <button @click="setClipDuration(60)" class="btn-secondary !py-2.5 text-sm">60s</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid md:grid-cols-2 gap-5">
+                                            <div>
+                                                <label class="text-sm font-bold block mb-2">Top text</label>
+                                                <input type="text" x-model="clip.top_text" placeholder="WHEN THE..." class="input-shell">
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-bold block mb-2">Bottom text</label>
+                                                <input type="text" x-model="clip.bottom_text" placeholder="BOTTOM TEXT" class="input-shell">
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Output format</label>
+                                            <select x-model="clip.format" class="select-shell">
+                                                <option value="Short (9:16 MP4)">TikTok / Shorts (9:16 crop)</option>
+                                                <option value="Meme GIF">Meme GIF</option>
+                                                <option value="Standard Clip">Standard clip</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel rounded-[1.75rem] p-5 md:p-6">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Export Action</div>
+                                    <div class="space-y-5 mt-5">
+                                        <div class="soft-panel rounded-2xl p-4">
+                                            <div class="font-bold">Best for</div>
+                                            <div class="text-sm mt-2 leading-6" style="color: var(--muted);">
+                                                Quick memes, short vertical snippets, and trimmed repost-ready clips.
+                                            </div>
+                                        </div>
+
+                                        <div x-show="clipStatus !== 'idle'" class="space-y-3">
+                                            <div class="flex justify-between gap-3 text-sm">
+                                                <span class="font-bold" x-text="clipMessage"></span>
+                                                <span style="color: var(--muted);" x-text="clipPercent"></span>
+                                            </div>
+                                            <div class="progress-rail h-3">
+                                                <div class="progress-bar h-full transition-all duration-300" :style="`width: ${clipPercent}`"></div>
+                                            </div>
+                                        </div>
+
+                                        <button @click="generateClip()" :disabled="clipStatus === 'downloading' || clipStatus === 'processing' || !validClip" class="btn-main w-full">
+                                            <i class="fa-solid fa-film mr-2"></i>Generate Clip
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section x-show="currentTab === 'stats'" x-transition.opacity.duration.300ms class="space-y-6">
+                            <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+                                <div class="soft-panel rounded-2xl p-5">
+                                    <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('totalDownloads')"></div>
+                                    <div class="title-display text-4xl font-bold mt-3" x-text="stats.total_items || 0"></div>
+                                    <div class="text-sm mt-2" style="color: var(--muted);" x-text="t('historySaved')"></div>
+                                </div>
+                                <div class="soft-panel rounded-2xl p-5">
+                                    <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('localFiles')"></div>
+                                    <div class="title-display text-4xl font-bold mt-3" x-text="stats.existing_files || 0"></div>
+                                    <div class="text-sm mt-2" style="color: var(--muted);"><span x-text="stats.missing_files || 0"></span> <span x-text="t('missingFiles')"></span></div>
+                                </div>
+                                <div class="soft-panel rounded-2xl p-5">
+                                    <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('storageUsed')"></div>
+                                    <div class="title-display text-4xl font-bold mt-3" x-text="formatBytes(stats.total_bytes || 0)"></div>
+                                    <div class="text-sm mt-2" style="color: var(--muted);" x-text="t('existingFilesOnly')"></div>
+                                </div>
+                                <div class="soft-panel rounded-2xl p-5">
+                                    <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('successRate')"></div>
+                                    <div class="title-display text-4xl font-bold mt-3" x-text="fileAvailabilityRate + '%'"></div>
+                                    <div class="text-sm mt-2" style="color: var(--muted);" x-text="t('filesStillFound')"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid xl:grid-cols-2 gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('topChannels')"></div>
+                                    <div class="space-y-4 mt-5">
+                                        <template x-for="row in stats.channels || []" :key="row[0]">
+                                            <div>
+                                                <div class="flex items-center justify-between gap-3 text-sm mb-2">
+                                                    <span class="font-bold truncate" x-text="row[0]"></span>
+                                                    <span style="color: var(--muted);" x-text="row[1]"></span>
+                                                </div>
+                                                <div class="progress-rail h-2">
+                                                    <div class="progress-bar h-full" :style="`width: ${statPercent(row[1], stats.total_items)}%`"></div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <div x-show="!stats.channels?.length" class="text-sm" style="color: var(--muted);" x-text="t('noStatsYet')"></div>
+                                    </div>
+                                </div>
+
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('formats')"></div>
+                                    <div class="grid sm:grid-cols-2 gap-3 mt-5">
+                                        <template x-for="row in stats.formats || []" :key="row[0]">
+                                            <div class="metric-chip px-4 py-3">
+                                                <div class="font-bold uppercase" x-text="row[0]"></div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);"><span x-text="row[1]"></span> <span x-text="t('items')"></span></div>
+                                            </div>
+                                        </template>
+                                        <div x-show="!stats.formats?.length" class="text-sm" style="color: var(--muted);" x-text="t('noStatsYet')"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass-panel rounded-[1.75rem] p-5 md:p-7">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
+                                    <div>
+                                        <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);" x-text="t('dailyActivity')"></div>
+                                        <h3 class="title-display text-2xl font-bold mt-2" x-text="t('recentDownloads')"></h3>
+                                    </div>
+                                    <button @click="fetchStats()" class="btn-secondary"><i class="fa-solid fa-rotate mr-2"></i><span x-text="t('refresh')"></span></button>
+                                    <button @click="downloadReport('json')" class="btn-secondary"><i class="fa-regular fa-file-code mr-2"></i>JSON</button>
+                                    <button @click="downloadReport('csv')" class="btn-secondary"><i class="fa-regular fa-file-lines mr-2"></i>CSV</button>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
+                                    <template x-for="row in stats.daily || []" :key="row[0]">
+                                        <div class="soft-panel rounded-2xl p-4">
+                                            <div class="text-xs" style="color: var(--muted);" x-text="row[0]"></div>
+                                            <div class="title-display text-2xl font-bold mt-2" x-text="row[1]"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                                <div x-show="!stats.daily?.length" class="text-sm" style="color: var(--muted);" x-text="t('noStatsYet')"></div>
+                            </div>
+                        </section>
+
+                        <section x-show="currentTab === 'history'" x-transition.opacity.duration.300ms class="space-y-4">
+                            <div class="soft-panel rounded-[1.75rem] p-4 md:p-5">
+                                <div class="grid lg:grid-cols-[minmax(0,1fr)_220px_auto] gap-3">
+                                    <input type="search" x-model="historyQuery" placeholder="Search title, channel, URL, or path..." class="input-shell">
+                                    <select x-model="historyChannel" class="select-shell">
+                                        <option value="">All channels</option>
+                                        <template x-for="channel in historyChannels" :key="channel">
+                                            <option :value="channel" x-text="channel"></option>
+                                        </template>
+                                    </select>
+                                    <button @click="clearHistory()" :disabled="history.length === 0" class="btn-danger">
+                                        <i class="fa-regular fa-trash-can mr-2"></i>Clear History
+                                    </button>
+                                </div>
+                                <div class="mt-3 text-sm" style="color: var(--muted);">
+                                    <span x-text="filteredHistory.length"></span> shown from <span x-text="history.length"></span> saved items
+                                </div>
+                            </div>
+
+                            <div x-show="history.length === 0" class="soft-panel rounded-[1.75rem] p-10 text-center">
+                                <div class="h-16 w-16 rounded-2xl mx-auto flex items-center justify-center mb-4"
+                                     style="background: var(--accent-soft); color: var(--accent);">
+                                    <i class="fa-regular fa-folder-open text-2xl"></i>
+                                </div>
+                                <h3 class="title-display text-2xl font-bold">No saved history yet</h3>
+                                <p class="mt-3 text-sm" style="color: var(--muted);">Your completed downloads and processed clips will show up here.</p>
+                            </div>
+
+                            <div x-show="history.length > 0 && filteredHistory.length === 0" class="soft-panel rounded-[1.75rem] p-10 text-center">
+                                <h3 class="title-display text-2xl font-bold">No matches</h3>
+                                <p class="mt-3 text-sm" style="color: var(--muted);">Try a different search or channel filter.</p>
+                            </div>
+
+                            <template x-for="item in filteredHistory" :key="item.filepath">
+                                <div class="soft-panel rounded-[1.5rem] p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div class="min-w-0">
+                                        <div class="title-display text-xl font-bold truncate" x-text="item.title"></div>
+                                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm mt-2" style="color: var(--muted);">
+                                            <span x-text="item.channel"></span>
+                                            <span x-text="item.timestamp.substring(0, 10)"></span>
+                                            <span class="truncate max-w-[320px]" x-text="item.filepath"></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3 shrink-0">
+                                        <button @click="openFile(item.filepath, false)" class="btn-secondary">
+                                            <i class="fa-regular fa-file mr-2"></i>Open
+                                        </button>
+                                        <button @click="openFile(item.filepath, true)" class="btn-secondary">
+                                            <i class="fa-regular fa-folder-open mr-2"></i>Folder
+                                        </button>
+                                        <button @click="loadHistoryItem(item)" class="btn-secondary">
+                                            <i class="fa-solid fa-rotate-right mr-2"></i>Reuse
+                                        </button>
+                                        <button @click="copyText(item.filepath, 'Path copied')" class="btn-secondary">
+                                            <i class="fa-regular fa-copy mr-2"></i>Copy Path
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </section>
+
+                        <section x-show="currentTab === 'settings'" x-transition.opacity.duration.300ms class="space-y-6">
+                            <div class="grid xl:grid-cols-[minmax(0,1.1fr)_380px] gap-6">
+                                <div class="soft-panel rounded-[1.75rem] p-5 md:p-7">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">System Settings</div>
+                                    <h2 class="title-display text-2xl font-bold mt-2">Control where outputs land</h2>
+                                    <div class="mt-6">
+                                        <label class="text-sm font-bold block mb-2">Download folder</label>
+                                        <div class="grid md:grid-cols-[minmax(0,1fr)_auto] gap-3">
+                                            <input type="text" x-model="serverSettings.download_folder" readonly class="input-shell opacity-80 cursor-not-allowed">
+                                            <button @click="selectFolder()" class="btn-secondary">
+                                                <i class="fa-regular fa-folder-open mr-2"></i>Browse
+                                            </button>
+                                        </div>
+                                        <p class="text-sm mt-3" style="color: var(--muted);">
+                                            All downloads, clips, and batch outputs are stored here.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel rounded-[1.75rem] p-5 md:p-6">
+                                    <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Preferences</div>
+                                    <div class="space-y-4 mt-5">
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Default format</label>
+                                            <select x-model="settings.format" class="select-shell">
+                                                <option value="video">Video (MP4)</option>
+                                                <option value="audio">Audio (MP3)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Default quality</label>
+                                            <select x-model="settings.quality" class="select-shell" :disabled="settings.format === 'audio'">
+                                                <template x-for="q in availableQualities" :key="q">
+                                                    <option :value="q" x-text="q"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-bold block mb-2">Default network mode</label>
+                                            <select x-model="settings.network_mode" class="select-shell">
+                                                <template x-for="mode in networkModes" :key="mode.id">
+                                                    <option :value="mode.id" x-text="mode.name"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <button @click="saveSettings()" class="btn-main w-full">
+                                            <i class="fa-regular fa-floppy-disk mr-2"></i>Save Preferences
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-5 right-5 z-50 transition-all duration-300"
+         :class="toast.show ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0 pointer-events-none'">
+        <div class="glass-panel rounded-2xl px-5 py-4 flex items-center gap-3 max-w-sm">
+            <div class="h-11 w-11 rounded-xl flex items-center justify-center shrink-0"
+                 :style="toast.type === 'error' ? 'background: rgba(220,38,38,0.12); color: var(--danger);' : 'background: rgba(15,157,122,0.14); color: var(--success);'">
+                <i class="fa-solid" :class="toast.type === 'error' ? 'fa-circle-exclamation' : 'fa-check'"></i>
+            </div>
+            <div>
+                <div class="font-bold" x-text="toast.type === 'error' ? 'Something went wrong' : 'Done'"></div>
+                <div class="text-sm" style="color: var(--muted);" x-text="toast.message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                isDark: true,
+                language: 'en',
+                currentTab: 'home',
+                url: '',
+                isFetching: false,
+                videoInfo: null,
+                appMeta: { version: '' },
+                estimateStatus: 'idle',
+                estimateMessage: '',
+                estimate: { smallest: [], largest: [], known_formats: 0 },
+                availableQualities: ['best', '1080p', '720p', '480p', '360p'],
+                networkModes: [
+                    { id: 'stable', name: 'Stable connection', short: 'Stable', icon: 'fa-solid fa-shield-halved', description: 'More retries and resume-friendly chunks for weak internet.' },
+                    { id: 'balanced', name: 'Balanced', short: 'Balanced', icon: 'fa-solid fa-gauge-high', description: 'Moderate fragment downloads with safe retry behavior.' },
+                    { id: 'turbo', name: 'Turbo fragments', short: 'Turbo', icon: 'fa-solid fa-bolt', description: 'Parallel fragments can be faster on a connection that stays steady.' },
+                    { id: 'data_saver', name: 'Data saver', short: 'Saver', icon: 'fa-solid fa-leaf', description: 'Smaller files, lower quality, and extra retries for unstable networks.' }
+                ],
+                presets: [
+                    { id: 'best-video', name: 'Best Video', icon: 'fa-solid fa-clapperboard', settings: { format: 'video', quality: 'best', download_transcript: false, sponsorblock: false, embed_metadata: true } },
+                    { id: 'archive', name: '1080 Archive', icon: 'fa-solid fa-box-archive', settings: { format: 'video', quality: '1080p', download_transcript: true, sponsorblock: false, embed_metadata: true } },
+                    { id: 'audio', name: 'Audio Only', icon: 'fa-solid fa-music', settings: { format: 'audio', quality: 'best', download_transcript: false, sponsorblock: false, embed_metadata: true } },
+                    { id: 'research', name: 'Research Pack', icon: 'fa-regular fa-file-lines', settings: { format: 'video', quality: '720p', download_transcript: true, sponsorblock: true, embed_metadata: true } },
+                    { id: 'low-bandwidth', name: 'Low Bandwidth', icon: 'fa-solid fa-signal', settings: { format: 'video', quality: '360p', download_transcript: false, sponsorblock: true, embed_metadata: false, network_mode: 'data_saver' } }
+                ],
+
+                settings: {
+                    format: 'video',
+                    quality: 'best',
+                    single_video: true,
+                    download_transcript: false,
+                    sponsorblock: false,
+                    embed_metadata: false,
+                    network_mode: 'stable'
+                },
+                serverSettings: { download_folder: '' },
+
+                downloadStatus: 'idle',
+                downloadMessage: '',
+                downloadPercent: 0,
+                downloadSpeed: '',
+                downloadEta: '',
+                lastDownloadedFile: null,
+
+                clip: { url: '', start: '', end: '', top_text: '', bottom_text: '', format: 'Short (9:16 MP4)' },
+                clipStatus: 'idle',
+                clipMessage: '',
+                clipPercent: '0%',
+
+                batch: { urlsRaw: '', status: 'idle', currentIndex: 0, totalCount: 0, currentUrl: '', percent: '0%', logs: [] },
+                batchState: { running: false, paused: false, completed: 0, failed: 0, queued: 0, failed_jobs: [] },
+
+                history: [],
+                stats: {
+                    total_items: 0,
+                    existing_files: 0,
+                    missing_files: 0,
+                    total_bytes: 0,
+                    channels: [],
+                    formats: [],
+                    daily: []
+                },
+                historyQuery: '',
+                historyChannel: '',
+                toast: { show: false, message: '', type: 'success' },
+
+                translations: {
+                    en: {
+                        appearance: 'Appearance',
+                        appearanceDesc: 'Switch between warm light and cinematic dark.',
+                        dark: 'Dark',
+                        light: 'Light',
+                        language: 'Language',
+                        history: 'History',
+                        savedItems: 'Saved items',
+                        queue: 'Queue',
+                        batchLinks: 'Batch links',
+                        workspace: 'Media Workspace',
+                        folder: 'Folder',
+                        notSet: 'Not set',
+                        mode: 'Mode',
+                        audioWorkflow: 'Audio workflow',
+                        videoWorkflow: 'Video workflow',
+                        dashboard: 'Dashboard',
+                        dashboardTitle: 'Sharpen your download workflow',
+                        dashboardSub: 'Single link',
+                        dashboardDesc: 'Analyze a media link, choose the output format, and run the download with a cleaner control surface.',
+                        batch: 'Batch',
+                        batchTitle: 'Queue a full batch run',
+                        batchSub: 'Bulk processing',
+                        batchDesc: 'Paste multiple links, apply one preset, and watch the queue progress without losing track of failures.',
+                        clip: 'Clip Maker',
+                        clipTitle: 'Cut clips for short-form content',
+                        clipSub: 'Trim and export',
+                        clipDesc: 'Turn long videos into focused short clips with captions and vertical-friendly output modes.',
+                        stats: 'Statistics',
+                        statsTitle: 'Understand every detail',
+                        statsSub: 'Analytics',
+                        statsDesc: 'See history totals, storage usage, file availability, top channels, formats, and daily activity.',
+                        historyTitle: 'Reopen your finished files',
+                        historySub: 'Recent output',
+                        historyDesc: 'Browse everything you already downloaded or processed and jump back into the file or folder instantly.',
+                        settings: 'Settings',
+                        settingsTitle: 'Keep your workspace organized',
+                        settingsSub: 'Output folder',
+                        settingsDesc: 'Manage where files are saved so every download, clip, and batch output lands in the right place.',
+                        totalDownloads: 'Total downloads',
+                        historySaved: 'Saved in history',
+                        localFiles: 'Local files',
+                        missingFiles: 'missing',
+                        storageUsed: 'Storage used',
+                        existingFilesOnly: 'Existing files only',
+                        successRate: 'File availability',
+                        filesStillFound: 'Files still found locally',
+                        topChannels: 'Top channels',
+                        formats: 'Formats',
+                        items: 'items',
+                        dailyActivity: 'Daily activity',
+                        recentDownloads: 'Recent downloads',
+                        refresh: 'Refresh',
+                        noStatsYet: 'No statistics yet.',
+                        estimateSize: 'Estimate Size',
+                        sizeEstimate: 'Size estimate',
+                        pause: 'Pause',
+                        resume: 'Resume',
+                        stop: 'Stop',
+                        retryFailed: 'Retry Failed',
+                        completed: 'completed',
+                        failed: 'failed',
+                        queued: 'queued',
+                        paused: 'paused',
+                        running: 'running',
+                        idle: 'idle',
+                        primaryDownload: 'Primary Download',
+                        pasteBuild: 'Paste a link and build the output you want',
+                        urlPlaceholder: 'Paste a YouTube or media URL here...',
+                        paste: 'Paste',
+                        analyzing: 'Analyzing',
+                        fetchInfo: 'Fetch Info',
+                        addToBatch: 'Add to Batch',
+                        saveDefault: 'Save Default',
+                        format: 'Format',
+                        quality: 'Quality',
+                        status: 'Status',
+                        ready: 'Ready',
+                        working: 'Working',
+                        networkMode: 'Network mode',
+                        quickSettings: 'Quick Settings',
+                        outputType: 'Output type',
+                        video: 'Video',
+                        audio: 'Audio',
+                        singleVideo: 'Single video only',
+                        singleVideoDesc: 'Ignore extra playlist entries when possible.',
+                        powerFeatures: 'Power Features',
+                        sponsorDesc: 'Skip ads, intros, and filler when supported.',
+                        embedMetadata: 'Embed metadata',
+                        embedDesc: 'Write cover art and details into output files.',
+                        transcript: 'Transcript markdown',
+                        transcriptDesc: 'Save a readable .md transcript alongside the file.',
+                        processing: 'Processing',
+                        startWorkflow: 'Start the download workflow',
+                        currentStatus: 'Current status',
+                        startDownload: 'Start Download',
+                        cancel: 'Cancel',
+                        openFile: 'Open File',
+                        openFolder: 'Open Folder'
+                    },
+                    ar: {
+                        appearance: 'المظهر',
+                        appearanceDesc: 'التبديل بين الوضع الفاتح والداكن.',
+                        dark: 'داكن',
+                        light: 'فاتح',
+                        language: 'اللغة',
+                        history: 'السجل',
+                        savedItems: 'عناصر محفوظة',
+                        queue: 'القائمة',
+                        batchLinks: 'روابط الدفعة',
+                        workspace: 'مساحة الوسائط',
+                        folder: 'المجلد',
+                        notSet: 'غير محدد',
+                        mode: 'الوضع',
+                        audioWorkflow: 'تحميل صوت',
+                        videoWorkflow: 'تحميل فيديو',
+                        dashboard: 'لوحة التحكم',
+                        dashboardTitle: 'تحكم أفضل في التحميل',
+                        dashboardSub: 'رابط واحد',
+                        dashboardDesc: 'حلل الرابط، اختر الصيغة والجودة، ثم شغل التحميل بوضوح.',
+                        batch: 'تحميل جماعي',
+                        batchTitle: 'تشغيل دفعة كاملة',
+                        batchSub: 'روابط متعددة',
+                        batchDesc: 'ألصق عدة روابط، اختر إعدادا واحدا، وتابع تقدم القائمة بسهولة.',
+                        clip: 'صانع المقاطع',
+                        clipTitle: 'قص مقاطع قصيرة',
+                        clipSub: 'قص وتصدير',
+                        clipDesc: 'حول الفيديوهات الطويلة إلى مقاطع قصيرة مع نصوص وصيغ مناسبة.',
+                        stats: 'الإحصائيات',
+                        statsTitle: 'افهم كل التفاصيل',
+                        statsSub: 'تحليلات',
+                        statsDesc: 'شاهد إجمالي التحميلات، حجم الملفات، توفرها، القنوات، الصيغ، والنشاط اليومي.',
+                        historyTitle: 'افتح ملفاتك السابقة',
+                        historySub: 'آخر النتائج',
+                        historyDesc: 'تصفح كل ما حملته أو عالجته وافتح الملف أو المجلد بسرعة.',
+                        settings: 'الإعدادات',
+                        settingsTitle: 'نظم مساحة العمل',
+                        settingsSub: 'مجلد الحفظ',
+                        settingsDesc: 'حدد مكان حفظ التحميلات والمقاطع والدفعات.',
+                        totalDownloads: 'إجمالي التحميلات',
+                        historySaved: 'محفوظة في السجل',
+                        localFiles: 'الملفات المحلية',
+                        missingFiles: 'مفقودة',
+                        storageUsed: 'المساحة المستخدمة',
+                        existingFilesOnly: 'للملفات الموجودة فقط',
+                        successRate: 'توفر الملفات',
+                        filesStillFound: 'الملفات الموجودة محليا',
+                        topChannels: 'أكثر القنوات',
+                        formats: 'الصيغ',
+                        items: 'عناصر',
+                        dailyActivity: 'النشاط اليومي',
+                        recentDownloads: 'آخر التحميلات',
+                        refresh: 'تحديث',
+                        noStatsYet: 'لا توجد إحصائيات بعد.',
+                        estimateSize: 'تقدير الحجم',
+                        sizeEstimate: 'تقدير الحجم',
+                        pause: 'إيقاف مؤقت',
+                        resume: 'استئناف',
+                        stop: 'إيقاف',
+                        retryFailed: 'إعادة الفاشلة',
+                        completed: 'مكتملة',
+                        failed: 'فاشلة',
+                        queued: 'بالانتظار',
+                        paused: 'متوقف مؤقتا',
+                        running: 'يعمل',
+                        idle: 'خامل',
+                        primaryDownload: 'التحميل الأساسي',
+                        pasteBuild: 'ألصق رابطا واختر طريقة الحفظ',
+                        urlPlaceholder: 'ألصق رابط يوتيوب أو رابط وسائط هنا...',
+                        paste: 'لصق',
+                        analyzing: 'جاري التحليل',
+                        fetchInfo: 'جلب المعلومات',
+                        addToBatch: 'أضف للدفعة',
+                        saveDefault: 'حفظ كافتراضي',
+                        format: 'الصيغة',
+                        quality: 'الجودة',
+                        status: 'الحالة',
+                        ready: 'جاهز',
+                        working: 'يعمل',
+                        networkMode: 'وضع الشبكة',
+                        quickSettings: 'إعدادات سريعة',
+                        outputType: 'نوع المخرجات',
+                        video: 'فيديو',
+                        audio: 'صوت',
+                        singleVideo: 'فيديو واحد فقط',
+                        singleVideoDesc: 'تجاهل عناصر قائمة التشغيل عند الإمكان.',
+                        powerFeatures: 'ميزات متقدمة',
+                        sponsorDesc: 'تخطي الإعلانات والمقدمات عند توفر الدعم.',
+                        embedMetadata: 'تضمين البيانات',
+                        embedDesc: 'حفظ الغلاف والتفاصيل داخل الملف.',
+                        transcript: 'تفريغ نصي Markdown',
+                        transcriptDesc: 'حفظ ملف .md قابل للقراءة بجانب الملف.',
+                        processing: 'المعالجة',
+                        startWorkflow: 'ابدأ عملية التحميل',
+                        currentStatus: 'الحالة الحالية',
+                        startDownload: 'ابدأ التحميل',
+                        cancel: 'إلغاء',
+                        openFile: 'فتح الملف',
+                        openFolder: 'فتح المجلد'
+                    }
+                },
+
+                get tabs() {
+                    return [
+                        { id: 'home', name: this.t('dashboard'), title: this.t('dashboardTitle'), subtitle: this.t('dashboardSub'), description: this.t('dashboardDesc'), icon: 'fa-solid fa-sparkles' },
+                        { id: 'batch', name: this.t('batch'), title: this.t('batchTitle'), subtitle: this.t('batchSub'), description: this.t('batchDesc'), icon: 'fa-solid fa-layer-group' },
+                        { id: 'clip', name: this.t('clip'), title: this.t('clipTitle'), subtitle: this.t('clipSub'), description: this.t('clipDesc'), icon: 'fa-solid fa-scissors' },
+                        { id: 'stats', name: this.t('stats'), title: this.t('statsTitle'), subtitle: this.t('statsSub'), description: this.t('statsDesc'), icon: 'fa-solid fa-chart-line' },
+                        { id: 'history', name: this.t('history'), title: this.t('historyTitle'), subtitle: this.t('historySub'), description: this.t('historyDesc'), icon: 'fa-solid fa-clock-rotate-left' },
+                        { id: 'settings', name: this.t('settings'), title: this.t('settingsTitle'), subtitle: this.t('settingsSub'), description: this.t('settingsDesc'), icon: 'fa-solid fa-sliders' }
+                    ];
+                },
+
+                get batchUrlsList() {
+                    return this.batch.urlsRaw
+                        .split('\n')
+                        .map(s => s.trim())
+                        .filter(s => /^https?:\/\//i.test(s));
+                },
+
+                get uniqueBatchUrls() {
+                    return [...new Set(this.batchUrlsList)];
+                },
+
+                get duplicateBatchCount() {
+                    return Math.max(this.batchUrlsList.length - this.uniqueBatchUrls.length, 0);
+                },
+
+                get historyChannels() {
+                    return [...new Set(this.history.map(item => item.channel).filter(Boolean))].sort();
+                },
+
+                get filteredHistory() {
+                    const query = this.historyQuery.trim().toLowerCase();
+                    return this.history.filter(item => {
+                        const matchesChannel = !this.historyChannel || item.channel === this.historyChannel;
+                        const haystack = `${item.title || ''} ${item.channel || ''} ${item.url || ''} ${item.filepath || ''}`.toLowerCase();
+                        return matchesChannel && (!query || haystack.includes(query));
+                    });
+                },
+
+                get clipDuration() {
+                    const start = Number(this.clip.start);
+                    const end = Number(this.clip.end);
+                    return Number.isFinite(start) && Number.isFinite(end) ? end - start : 0;
+                },
+
+                get validClip() {
+                    return Boolean(this.clip.url) && this.clipDuration > 0;
+                },
+
+                get fileAvailabilityRate() {
+                    if (!this.stats.total_items) return 0;
+                    return Math.round(((this.stats.existing_files || 0) / this.stats.total_items) * 100);
+                },
+
+                get networkModeLabel() {
+                    return this.networkModes.find(mode => mode.id === this.settings.network_mode)?.description || '';
+                },
+
+                init() {
+                    this.isDark = localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : true;
+                    this.language = localStorage.getItem('language') || 'en';
+                    this.setupSSE();
+                    this.fetchMeta();
+                    this.fetchHistory();
+                    this.fetchStats();
+                    this.fetchBatchState();
+                    this.fetchSettings();
+                    setInterval(() => this.fetchBatchState(), 2500);
+                },
+
+                t(key) {
+                    return this.translations[this.language]?.[key] || this.translations.en[key] || key;
+                },
+
+                setLanguage(language) {
+                    this.language = language;
+                    localStorage.setItem('language', language);
+                },
+
+                toggleTheme() {
+                    localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+                },
+
+                showToast(message, type = 'success') {
+                    this.toast = { show: true, message, type };
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 3000);
+                },
+
+                formatTime(seconds) {
+                    if (!seconds) return "0:00";
+                    const total = Math.floor(seconds);
+                    const h = Math.floor(total / 3600);
+                    const m = Math.floor((total % 3600) / 60);
+                    const s = total % 60;
+                    return h > 0
+                        ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+                        : `${m}:${s.toString().padStart(2, '0')}`;
+                },
+
+                formatBytes(bytes) {
+                    if (!bytes) return '0 B';
+                    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+                    return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+                },
+
+                statPercent(value, total) {
+                    if (!total) return 0;
+                    return Math.max(4, Math.round((value / total) * 100));
+                },
+
+                async fetchSettings() {
+                    const res = await fetch('/api/settings');
+                    this.serverSettings = await res.json();
+                    this.settings.format = this.serverSettings.default_format || this.settings.format;
+                    this.settings.quality = this.serverSettings.default_quality || this.settings.quality;
+                    this.settings.network_mode = this.serverSettings.network_mode || this.settings.network_mode;
+                },
+
+                async fetchMeta() {
+                    const res = await fetch('/api/meta');
+                    this.appMeta = await res.json();
+                },
+
+                async selectFolder() {
+                    const res = await fetch('/api/select_folder', { method: 'POST' });
+                    const data = await res.json();
+                    if (data.folder) {
+                        this.serverSettings.download_folder = data.folder;
+                        this.showToast('Download folder updated');
+                    }
+                },
+
+                async saveSettings() {
+                    this.serverSettings.default_format = this.settings.format;
+                    this.serverSettings.default_quality = this.settings.quality;
+                    this.serverSettings.network_mode = this.settings.network_mode;
+                    await fetch('/api/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.serverSettings)
+                    });
+                    this.showToast('Preferences saved');
+                },
+
+                applyPreset(preset) {
+                    this.settings = { ...this.settings, ...preset.settings };
+                    this.showToast(`${preset.name} preset applied`);
+                },
+
+                async saveCurrentAsDefault() {
+                    await this.saveSettings();
+                    this.showToast('Current format saved as default');
+                },
+
+                async pasteUrl() {
+                    try {
+                        this.url = await navigator.clipboard.readText();
+                    } catch (error) {
+                        this.showToast('Clipboard access was blocked', 'error');
+                    }
+                },
+
+                addCurrentToBatch() {
+                    if (!this.url) return;
+                    const next = [...this.uniqueBatchUrls, this.url.trim()].filter(Boolean);
+                    this.batch.urlsRaw = [...new Set(next)].join('\n');
+                    this.currentTab = 'batch';
+                    this.showToast('Link added to batch');
+                },
+
+                addHistoryToBatch(item) {
+                    if (!item?.url) {
+                        this.showToast('This history item has no source URL', 'error');
+                        return;
+                    }
+                    const next = [...this.uniqueBatchUrls, item.url].filter(Boolean);
+                    this.batch.urlsRaw = [...new Set(next)].join('\n');
+                    this.showToast('History item added to batch');
+                },
+
+                cleanBatchQueue() {
+                    this.batch.urlsRaw = this.uniqueBatchUrls.join('\n');
+                    this.showToast('Batch queue cleaned');
+                },
+
+                clearBatchQueue() {
+                    this.batch.urlsRaw = '';
+                    this.showToast('Batch queue cleared');
+                },
+
+                loadHistoryItem(item) {
+                    this.url = item.url || '';
+                    this.currentTab = 'home';
+                    if (this.url) this.showToast('History URL loaded');
+                },
+
+                async copyText(text, message = 'Copied') {
+                    try {
+                        await navigator.clipboard.writeText(text || '');
+                        this.showToast(message);
+                    } catch (error) {
+                        this.showToast('Clipboard access was blocked', 'error');
+                    }
+                },
+
+                setClipDuration(seconds) {
+                    const start = Number(this.clip.start) || 0;
+                    this.clip.start = String(start);
+                    this.clip.end = String(start + seconds);
+                },
+
+                async estimateDownload() {
+                    if (!this.url) return;
+                    this.estimateStatus = 'loading';
+                    this.estimateMessage = 'Checking available formats...';
+                    this.estimate = { smallest: [], largest: [], known_formats: 0 };
+                    try {
+                        const res = await fetch('/api/estimate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: this.url })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Estimate failed');
+                        this.estimate = data;
+                        this.estimateStatus = 'success';
+                        this.estimateMessage = data.known_formats
+                            ? `${data.known_formats} formats with known file size. Smallest options shown.`
+                            : 'The source did not publish exact file sizes.';
+                    } catch (error) {
+                        this.estimateStatus = 'error';
+                        this.estimateMessage = error.message;
+                        this.showToast(error.message, 'error');
+                    }
+                },
+
+                async fetchBatchState() {
+                    const res = await fetch('/api/batch/state');
+                    this.batchState = await res.json();
+                },
+
+                async controlBatch(action) {
+                    const res = await fetch('/api/batch/control', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                        this.showToast(data.error || 'Batch control failed', 'error');
+                        return;
+                    }
+                    this.batchState = data.batch || this.batchState;
+                    this.showToast(`Batch ${action.replace('_', ' ')}`);
+                },
+
+                setupSSE() {
+                    const evtSource = new EventSource('/stream');
+                    evtSource.onmessage = (event) => {
+                        const payload = JSON.parse(event.data);
+
+                        if (payload.type === 'info') {
+                            this.videoInfo = payload.data;
+                            this.isFetching = false;
+                            this.showToast('Analysis complete');
+                        } else if (payload.type === 'progress') {
+                            const d = payload.data;
+                            if (d.status === 'downloading') {
+                                this.downloadStatus = 'downloading';
+                                this.downloadMessage = 'Downloading data stream...';
+                                const total = d.total_bytes || d.total_bytes_estimate || 1;
+                                this.downloadPercent = ((d.downloaded_bytes / total) * 100).toFixed(1);
+                                this.downloadSpeed = ((d.speed || 0) / 1024 / 1024).toFixed(2) + ' MB/s';
+                                this.downloadEta = 'ETA ' + this.formatTime(d.eta || 0);
+                            } else if (d.status === 'finished') {
+                                this.downloadStatus = 'processing';
+                                this.downloadMessage = 'Finalizing output...';
+                                this.downloadPercent = 100;
+                                this.downloadEta = '';
+                            }
+                        } else if (payload.type === 'success') {
+                            this.downloadStatus = 'success';
+                            this.downloadMessage = 'Download complete.';
+                            this.lastDownloadedFile = payload.filepath;
+                            this.showToast('Downloaded successfully');
+                            this.fetchHistory();
+                            this.fetchStats();
+                        } else if (payload.type === 'error') {
+                            this.isFetching = false;
+                            this.downloadStatus = 'error';
+                            this.downloadMessage = payload.message;
+                            this.showToast(payload.message, 'error');
+                        } else if (payload.type === 'clip_status') {
+                            this.clipStatus = 'processing';
+                            this.clipMessage = payload.message;
+                        } else if (payload.type === 'clip_progress') {
+                            this.clipStatus = 'downloading';
+                            this.clipPercent = payload.percent;
+                            this.clipMessage = 'Downloading clip source...';
+                        } else if (payload.type === 'clip_success') {
+                            this.clipStatus = 'idle';
+                            this.clipMessage = 'Clip ready';
+                            this.clipPercent = '100%';
+                            this.showToast('Clip generated');
+                            this.openFile(payload.filepath, true);
+                        } else if (payload.type === 'clip_error') {
+                            this.clipStatus = 'error';
+                            this.clipMessage = payload.message;
+                            this.showToast(payload.message || 'Clip failed', 'error');
+                        } else if (payload.type === 'batch_status') {
+                            this.batch.status = 'running';
+                            this.batch.currentIndex = payload.index;
+                            this.batch.totalCount = payload.total;
+                            this.batch.currentUrl = payload.url;
+                            this.batch.percent = '0%';
+                        } else if (payload.type === 'batch_progress') {
+                            this.batch.percent = payload.percent;
+                        } else if (payload.type === 'batch_item_success') {
+                            this.batch.logs.unshift({ id: Date.now() + Math.random(), type: 'success', msg: `Saved: ${payload.title}` });
+                            this.fetchHistory();
+                            this.fetchStats();
+                        } else if (payload.type === 'batch_item_error') {
+                            this.batch.logs.unshift({ id: Date.now() + Math.random(), type: 'error', msg: `Failed: ${payload.url}` });
+                        } else if (payload.type === 'batch_complete') {
+                            this.batch.status = 'idle';
+                            this.showToast('Batch run finished');
+                        }
+                    };
+                },
+
+                async fetchInfo() {
+                    if (!this.url) return;
+                    this.isFetching = true;
+                    this.videoInfo = null;
+                    this.downloadStatus = 'idle';
+                    this.downloadMessage = '';
+                    this.downloadPercent = 0;
+                    this.downloadSpeed = '';
+                    this.downloadEta = '';
+                    try {
+                        await fetch('/api/fetch', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: this.url, single_video: this.settings.single_video })
+                        });
+                    } catch (e) {
+                        this.isFetching = false;
+                        this.showToast('Network error', 'error');
+                    }
+                },
+
+                async startDownload() {
+                    if (!this.url) return;
+                    this.downloadStatus = 'downloading';
+                    this.downloadMessage = 'Initializing...';
+                    this.downloadPercent = 0;
+                    this.downloadSpeed = '';
+                    this.downloadEta = '';
+                    await fetch('/api/download', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: this.url, ...this.settings })
+                    });
+                },
+
+                async cancelDownload() {
+                    await fetch('/api/cancel', { method: 'POST' });
+                    this.downloadStatus = 'error';
+                    this.downloadMessage = 'Cancelled.';
+                    this.downloadSpeed = '';
+                    this.downloadEta = '';
+                },
+
+                async generateClip() {
+                    if (!this.validClip) {
+                        this.showToast('Set a valid clip start and end time', 'error');
+                        return;
+                    }
+                    this.clipStatus = 'downloading';
+                    this.clipMessage = 'Initializing...';
+                    this.clipPercent = '0%';
+                    await fetch('/api/clip', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            url: this.clip.url,
+                            start_time: this.clip.start,
+                            end_time: this.clip.end,
+                            top_text: this.clip.top_text,
+                            bottom_text: this.clip.bottom_text,
+                            format_type: this.clip.format
+                        })
+                    });
+                },
+
+                async startBatch() {
+                    const urls = this.uniqueBatchUrls;
+                    if (urls.length === 0) return;
+                    this.batch.status = 'running';
+                    this.batch.logs = [];
+                    this.batch.currentIndex = 0;
+                    this.batch.totalCount = urls.length;
+                    this.batch.currentUrl = '';
+                    this.batch.percent = '0%';
+                    await fetch('/api/batch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ urls: urls, config: this.settings })
+                    });
+                    this.fetchBatchState();
+                    this.showToast(`Batch queued: ${urls.length} items`);
+                },
+
+                async fetchHistory() {
+                    const res = await fetch('/api/history');
+                    this.history = (await res.json()).reverse();
+                },
+
+                async fetchStats() {
+                    const res = await fetch('/api/stats');
+                    this.stats = await res.json();
+                },
+
+                downloadReport(format) {
+                    window.location.href = `/api/report?format=${format}`;
+                },
+
+                async clearHistory() {
+                    if (!this.history.length) return;
+                    await fetch('/api/history', { method: 'DELETE' });
+                    this.history = [];
+                    this.fetchStats();
+                    this.historyQuery = '';
+                    this.historyChannel = '';
+                    this.showToast('History cleared');
+                },
+
+                async openFile(path, isFolder) {
+                    await fetch('/api/open', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ path, is_folder: isFolder })
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
