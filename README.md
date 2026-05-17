@@ -1,100 +1,142 @@
-# Velo
+<div align="center">
 
-Velo is a local media workspace for downloading videos, extracting audio, creating short clips, managing batch queues, and understanding download history through built-in statistics.
+# 🚀 Velo
+**Your Local Media Workspace & Viral Content Engine**
 
-It is built for real-world connections, including unstable and low-bandwidth networks. The web dashboard runs locally in your browser and the backend is powered by Flask and yt-dlp.
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/Flask-Backend-green.svg)](https://flask.palletsprojects.com/)
+[![yt-dlp](https://img.shields.io/badge/yt--dlp-Downloader-red.svg)](https://github.com/yt-dlp/yt-dlp)
 
-## Highlights
+*Download videos, extract audio, create short clips, and manage batch queues locally.*
 
-- Local web dashboard with light/dark mode.
-- Low-bandwidth network modes: Stable, Balanced, Turbo, and Data Saver.
-- Single video, audio-only, batch download, and clip maker workflows.
-- Queue controls: pause, resume, stop, retry failed items, dedupe links, and queue from history.
-- Size estimate before download when the source provides format sizes.
-- Statistics dashboard: total downloads, storage usage, file availability, top channels, formats, and daily activity.
-- Reports export as JSON or CSV.
-- Multilingual UI foundation with English and Arabic support.
-- History search, channel filtering, path copy, reuse URL, and open file/folder actions.
+</div>
 
-## Requirements
+---
 
-- Python 3.11 or newer.
-- FFmpeg installed and available on PATH.
-- Internet access for downloading media and loading CDN assets used by the dashboard.
+## 📖 Overview
 
-Install FFmpeg:
+**Velo** is a fully localized media workspace designed for efficiency and robustness. It offers a premium, modern web dashboard that runs entirely in your browser, powered locally by Flask and `yt-dlp`. 
 
+Built specifically to handle real-world network conditions—including unstable and low-bandwidth connections—Velo provides the ultimate toolkit for media management and history tracking without relying on cloud services.
+
+---
+
+## ✨ Highlights
+
+*   **🌗 Local Web Dashboard**: A sleek, Vercel-inspired interface with light/dark mode support.
+*   **📶 Resilient Network Modes**: Choose from *Stable*, *Balanced*, *Turbo*, and *Data Saver* to adapt to your connection.
+*   **🛠️ Versatile Workflows**: Support for single video downloads, audio extraction, batch queues, and precise clip making.
+*   **⏯️ Advanced Queue Controls**: Pause, resume, stop, retry failed items, deduplicate links, and requeue directly from history.
+*   **📊 Insights & Statistics**: Built-in dashboard tracking total downloads, storage usage, top channels, formats, and daily activity.
+*   **📁 Seamless Management**: Search history, filter by channel, copy file paths, and open folders directly from the UI.
+*   **🌍 Multilingual**: UI foundation with support for English and Arabic.
+*   **📄 Exportable Reports**: Export your download history in JSON or CSV formats.
+
+---
+
+## ⚙️ Requirements
+
+Before you begin, ensure you have the following installed:
+
+- 🐍 **Python 3.11** or newer.
+- 🎬 **FFmpeg** (Must be installed and available on your system's PATH).
+- 🌐 **Internet Access** (For downloading media and initial CDN assets).
+
+### Installing FFmpeg (Windows)
 ```powershell
 winget install ffmpeg
 ```
 
-## Setup
+---
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python main.py
-```
+## 🚀 Setup & Installation
 
-The app opens at:
+Get Velo running locally in a few simple steps:
 
-```text
-http://127.0.0.1:5000
-```
+1. **Create and activate a virtual environment**:
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
 
-On Windows you can also run:
+2. **Install dependencies**:
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
-```powershell
-.\run_velo.bat
-```
+3. **Start the application**:
+   ```powershell
+   python main.py
+   ```
+   *Alternatively, on Windows, simply double-click or run: `.\run_velo.bat`*
 
-## Recommended Settings For Weak Internet
+4. **Open the Dashboard**:  
+   The application will automatically be available at: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-- Use the `Low Bandwidth` preset for the smallest practical downloads.
-- Use `Data Saver` when the connection disconnects often.
-- Use `Stable` when downloads fail midway and need more retries.
-- Use `Balanced` when the connection is slow but mostly steady.
-- Use `Turbo` only when the connection can handle parallel fragments.
+---
 
-## API Overview
+## 🌐 Recommended Network Settings
 
-- `GET /api/meta`: app metadata and feature flags.
-- `GET /api/settings`, `POST /api/settings`: read and save settings.
-- `GET /api/history`, `DELETE /api/history`: read or clear history.
-- `GET /api/stats`: computed statistics from local history.
-- `GET /api/report?format=json|csv`: export reports.
-- `POST /api/estimate`: estimate known source format sizes.
-- `POST /api/fetch`: fetch video info.
-- `POST /api/download`: start a single download.
-- `POST /api/batch`: queue batch downloads.
-- `GET /api/batch/state`: inspect batch state.
-- `POST /api/batch/control`: pause, resume, stop, or retry failed jobs.
-- `POST /api/clip`: generate a clip.
+Optimize your experience based on your internet connection:
 
-## Testing
+| Mode | Use Case |
+| :--- | :--- |
+| **📉 Low Bandwidth** | Best for downloading the smallest practical file sizes. |
+| **🛡️ Data Saver** | Ideal when your connection disconnects frequently. |
+| **⚓ Stable** | Perfect for when downloads fail midway and require multiple retries. |
+| **⚖️ Balanced** | Recommended for connections that are slow but mostly steady. |
+| **⚡ Turbo** | Use only when your connection is strong enough to handle parallel fragments. |
+
+---
+
+## 🔌 API Overview
+
+Velo provides a comprehensive local API for developers:
+
+*   `GET /api/meta` - App metadata and feature flags.
+*   `GET /api/settings` & `POST /api/settings` - Read and save user configurations.
+*   `GET /api/history` & `DELETE /api/history` - Retrieve or clear download history.
+*   `GET /api/stats` - Access computed statistics from local history.
+*   `GET /api/report?format=json|csv` - Export detailed reports.
+*   `POST /api/estimate` - Estimate file sizes for known formats.
+*   `POST /api/fetch` - Fetch video metadata and information.
+*   `POST /api/download` - Initiate a single file download.
+*   `POST /api/batch` - Queue a batch download job.
+*   `GET /api/batch/state` - Inspect the current state of batch jobs.
+*   `POST /api/batch/control` - Pause, resume, stop, or retry jobs.
+*   `POST /api/clip` - Generate a specified media clip.
+
+---
+
+## 🧪 Testing
+
+Run the included pytest suite to verify settings, history management, and statistics helpers:
 
 ```powershell
 python -m pytest
 ```
 
-The current tests focus on settings, history, and statistics helpers.
+---
 
-## Packaging Ideas
+## 📦 Packaging for Production
 
-For a professional Windows release, package with PyInstaller:
+To create a professional, standalone Windows executable using PyInstaller:
 
 ```powershell
 pip install pyinstaller
 pyinstaller --onefile --name Velo main.py
 ```
+*Tip: For a polished release, add a custom app icon, sign your installer, and include detailed release notes!*
 
-After that, add an app icon, signed installer, release notes, and a versioned changelog.
+---
 
-## Font Assets
+## 🖋️ Font Assets
 
-Arabic UI text uses locally bundled Thmanyah Sans `woff2` files from the Thmanyah Font Family package. If you distribute this app, keep the original font license available and confirm the package terms allow your distribution use case.
+The Arabic UI text utilizes locally bundled **Thmanyah Sans** `woff2` files. If you fork or distribute this application, please ensure you retain the original font license and verify that your use case complies with their terms.
 
-## Responsible Use
+---
 
-Only download media you are allowed to save and reuse. Velo does not bypass DRM or private access controls.
+## ⚖️ Responsible Use
+
+> [!WARNING]  
+> **Velo** does not bypass DRM or access private, restricted content. Please ensure you only download media that you have the right to save, reuse, or archive.

@@ -72,7 +72,8 @@ class AppUI(ctk.CTk):
         self.sidebar_frame.grid_rowconfigure(7, weight=1)
         
         try:
-            logo_img_data = Image.open(r"C:\Users\kalab\.gemini\antigravity\brain\db950351-0900-4c78-aeb2-9fe42799f544\snagtube_logo_1779000973526.png")
+            logo_img_path = Path(__file__).parent / "static" / "logo.png"
+            logo_img_data = Image.open(logo_img_path)
             self.logo_image = ctk.CTkImage(light_image=logo_img_data, dark_image=logo_img_data, size=(40, 40))
             self.logo_label = ctk.CTkLabel(self.sidebar_frame, text=" Velo", image=self.logo_image, compound="left", font=ctk.CTkFont(family=FONT_MAIN, size=24, weight="bold"), text_color=TEXT_MAIN)
         except Exception:

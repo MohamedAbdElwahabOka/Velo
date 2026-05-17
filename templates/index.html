@@ -137,6 +137,11 @@
         .title-display {
             font-family: 'Space Grotesk', sans-serif;
             letter-spacing: -0.04em;
+            background: linear-gradient(to right, var(--text) 20%, var(--accent) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
         }
 
         body[dir="rtl"] .title-display {
@@ -309,11 +314,17 @@
 
         .nav-item-idle {
             color: var(--muted);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-item-idle:hover {
             background: rgba(255, 255, 255, 0.06);
             color: var(--text);
+            transform: translateX(4px);
+        }
+
+        body[dir="rtl"] .nav-item-idle:hover {
+            transform: translateX(-4px);
         }
 
         ::-webkit-scrollbar {
@@ -335,6 +346,20 @@
                 border-radius: 0;
             }
         }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body x-data="app()" x-init="init()" :class="{ 'dark': isDark }" :dir="language === 'ar' ? 'rtl' : 'ltr'" :lang="language">
@@ -344,9 +369,10 @@
                 <aside class="border-b lg:border-b-0 lg:border-r p-5 md:p-6" style="border-color: var(--line);">
                     <div class="flex items-center justify-between gap-4 mb-8">
                         <div class="flex items-center gap-4">
-                            <div class="h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black shadow-lg"
+                            <div class="h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black shadow-lg animate-float"
                                  style="background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #111827;">
-                                <i class="fa-solid fa-bolt"></i>
+                                <!-- <i class="fa-solid fa-bolt"></i> -->
+                                <img src="/static/logo.png" class="w-8 h-8 object-contain" alt="Velo Logo">
                             </div>
                             <div>
                                 <div class="title-display text-2xl font-bold">Velo</div>
