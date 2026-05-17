@@ -97,6 +97,14 @@ def batch_worker():
             progress_queue.put({'type': 'batch_paused'})
             time.sleep(0.8)
 
+        night_mode = config.get('night_mode', False)
+        if night_mode:
+            while datetime.now().hour != 2:
+                if get_batch_state()["stop_requested"] or get_batch_state()["paused"]:
+                    break
+                progress_queue.put({'type': 'batch_status', 'index': index, 'total': total, 'url': url, 'message': 'Waiting for 2 AM...'})
+                time.sleep(10)
+
         if get_batch_state()["stop_requested"]:
             add_batch_log("skipped", url, "Skipped because queue was stopped")
             batch_queue.task_done()
@@ -150,7 +158,8 @@ def batch_worker():
             download_transcript=config.get('download_transcript', False),
             sponsorblock=config.get('sponsorblock', False),
             embed_metadata=config.get('embed_metadata', False),
-            network_mode=config.get('network_mode', 'stable')
+            network_mode=config.get('network_mode', 'stable'),
+            download_archive=config.get('download_archive', False)
         )
         
         event.wait() # Wait for this download to finish before taking the next
@@ -348,6 +357,7 @@ def api_download():
     sponsorblock = data.get('sponsorblock', False)
     embed_metadata = data.get('embed_metadata', False)
     network_mode = data.get('network_mode', 'stable')
+    download_archive = data.get('download_archive', False)
     
     if not url:
         return jsonify({"error": "URL is required"}), 400
@@ -358,7 +368,8 @@ def api_download():
         'download_transcript': download_transcript,
         'sponsorblock': sponsorblock,
         'embed_metadata': embed_metadata,
-        'network_mode': network_mode
+        'network_mode': network_mode,
+        'download_archive': download_archive
     }, daemon=True).start()
     return jsonify({"status": "downloading"})
 

@@ -30,7 +30,10 @@ def load_settings():
         "download_folder": str(Path.home() / "Downloads"),
         "default_quality": "best",
         "default_format": "video",
-        "network_mode": "stable"
+        "network_mode": "stable",
+        "sponsorblock": False,
+        "embed_metadata": False,
+        "download_archive": False
     }
     
     settings_path = get_settings_path()

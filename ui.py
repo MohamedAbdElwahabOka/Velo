@@ -262,11 +262,23 @@ class AppUI(ctk.CTk):
         
         self.single_video_var = ctk.BooleanVar(value=True)
         self.single_video_checkbox = ctk.CTkCheckBox(self.options_frame, text="Single Video Only (Ignore Playlist)", variable=self.single_video_var, text_color=TEXT_MAIN)
-        self.single_video_checkbox.grid(row=2, column=0, columnspan=2, padx=20, pady=(10, 20), sticky="w")
+        self.single_video_checkbox.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="w")
         
         self.download_transcript_var = ctk.BooleanVar(value=False)
         self.download_transcript_checkbox = ctk.CTkCheckBox(self.options_frame, text="Download Transcript to MD", variable=self.download_transcript_var, text_color=TEXT_MAIN)
-        self.download_transcript_checkbox.grid(row=2, column=2, columnspan=2, padx=10, pady=(10, 20), sticky="w")
+        self.download_transcript_checkbox.grid(row=2, column=2, columnspan=2, padx=10, pady=10, sticky="w")
+
+        self.sponsorblock_var = ctk.BooleanVar(value=False)
+        self.sponsorblock_checkbox = ctk.CTkCheckBox(self.options_frame, text="SponsorBlock Ad-Skipping", variable=self.sponsorblock_var, text_color=TEXT_MAIN)
+        self.sponsorblock_checkbox.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="w")
+
+        self.embed_metadata_var = ctk.BooleanVar(value=False)
+        self.embed_metadata_checkbox = ctk.CTkCheckBox(self.options_frame, text="Embed Cover Art & Metadata", variable=self.embed_metadata_var, text_color=TEXT_MAIN)
+        self.embed_metadata_checkbox.grid(row=3, column=2, columnspan=2, padx=10, pady=10, sticky="w")
+
+        self.download_archive_var = ctk.BooleanVar(value=False)
+        self.download_archive_checkbox = ctk.CTkCheckBox(self.options_frame, text="Smart Sync (Only download new)", variable=self.download_archive_var, text_color=TEXT_MAIN)
+        self.download_archive_checkbox.grid(row=4, column=0, columnspan=2, padx=20, pady=(10, 20), sticky="w")
         
         self.action_frame = ctk.CTkFrame(self.home_frame, fg_color="transparent")
         self.action_frame.grid(row=4, column=0, sticky="sew")
@@ -602,6 +614,9 @@ class AppUI(ctk.CTk):
         quality = self.quality_var.get()
         single_video = self.single_video_var.get() if hasattr(self, 'single_video_var') else True
         download_transcript = self.download_transcript_var.get() if hasattr(self, 'download_transcript_var') else False
+        sponsorblock = self.sponsorblock_var.get() if hasattr(self, 'sponsorblock_var') else False
+        embed_metadata = self.embed_metadata_var.get() if hasattr(self, 'embed_metadata_var') else False
+        download_archive = self.download_archive_var.get() if hasattr(self, 'download_archive_var') else False
         
         if not url:
             messagebox.showwarning("Warning", "Please enter a URL first.")
@@ -623,7 +638,15 @@ class AppUI(ctk.CTk):
         self.open_file_btn.pack_forget()
         self.open_folder_btn.pack_forget()
         
-        self.downloader.download(url, folder, fmt, quality, single_video=single_video, playlist_items=self.selected_playlist_items, download_transcript=download_transcript)
+        self.downloader.download(
+            url, folder, fmt, quality, 
+            single_video=single_video, 
+            playlist_items=self.selected_playlist_items, 
+            download_transcript=download_transcript,
+            sponsorblock=sponsorblock,
+            embed_metadata=embed_metadata,
+            download_archive=download_archive
+        )
 
     def cancel_download(self):
         self.downloader.cancel()

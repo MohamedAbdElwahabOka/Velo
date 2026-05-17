@@ -56,7 +56,7 @@ class VeloDownloader:
         thread = threading.Thread(target=_fetch, daemon=True)
         thread.start()
 
-    def download(self, url, folder_path, format_type='video', quality='best', single_video=True, playlist_items=None, download_transcript=False, clip_start=None, clip_end=None, sponsorblock=False, embed_metadata=False, network_mode='stable'):
+    def download(self, url, folder_path, format_type='video', quality='best', single_video=True, playlist_items=None, download_transcript=False, clip_start=None, clip_end=None, sponsorblock=False, embed_metadata=False, network_mode='stable', download_archive=False):
         """
         Starts the download in a separate thread.
         format_type: 'video' (MP4) or 'audio' (MP3)
@@ -113,6 +113,9 @@ class VeloDownloader:
                 ydl_opts['subtitlesformat'] = 'vtt'
             if clip_start is not None and clip_end is not None:
                 ydl_opts['download_ranges'] = yt_dlp.utils.download_range_func(None, [(clip_start, clip_end)])
+
+            if download_archive:
+                ydl_opts['download_archive'] = str(Path(folder_path) / 'velo_archive.txt')
 
             if sponsorblock:
                 ydl_opts['sponsorblock_remove'] = ['sponsor', 'intro', 'outro', 'interaction']

@@ -382,62 +382,51 @@
                         </div>
                     </div>
 
-                    <div class="accent-panel rounded-[1.5rem] p-4 mb-6">
-                        <div class="text-xs font-bold uppercase tracking-[0.25em]" style="color: var(--muted);">Workspace</div>
-                        <div class="title-display text-xl font-bold mt-2">Built for fast content capture</div>
-                        <p class="mt-2 text-sm leading-6" style="color: var(--muted);">
-                            One place to fetch info, queue downloads, create clips, and reopen your saved files.
-                        </p>
-                    </div>
-
                     <nav class="space-y-2">
                         <template x-for="tab in tabs" :key="tab.id">
                             <button
                                 @click="currentTab = tab.id"
-                                class="w-full rounded-2xl px-4 py-3.5 flex items-center gap-4 text-left transition-all duration-200"
+                                class="w-full rounded-2xl px-4 py-3 flex items-center justify-between text-left transition-all duration-200"
                                 :class="currentTab === tab.id ? 'nav-item-active' : 'nav-item-idle'">
-                                <div class="h-11 w-11 rounded-xl flex items-center justify-center text-base"
-                                     :style="currentTab === tab.id ? 'background: var(--accent-soft);' : 'background: rgba(148,163,184,0.10);'">
-                                    <i :class="tab.icon"></i>
+                                <div class="flex items-center gap-4">
+                                    <div class="h-10 w-10 rounded-xl flex items-center justify-center text-base"
+                                         :style="currentTab === tab.id ? 'background: var(--accent-soft);' : 'background: rgba(148,163,184,0.06);'">
+                                        <i :class="tab.icon"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold" x-text="tab.name"></div>
+                                        <div class="text-xs mt-0.5" style="color: var(--muted);" x-text="tab.subtitle"></div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="font-bold" x-text="tab.name"></div>
-                                    <div class="text-xs mt-0.5" style="color: var(--muted);" x-text="tab.subtitle"></div>
-                                </div>
+                                <div x-show="tab.id === 'history' && history.length"
+                                     class="px-2.5 py-1 text-xs font-bold rounded-full"
+                                     style="background: var(--line); color: var(--text);"
+                                     x-text="history.length"></div>
+                                <div x-show="tab.id === 'batch' && uniqueBatchUrls.length"
+                                     class="px-2.5 py-1 text-xs font-bold rounded-full"
+                                     style="background: var(--accent-soft); color: var(--accent);"
+                                     x-text="uniqueBatchUrls.length"></div>
                             </button>
                         </template>
                     </nav>
 
-                    <div class="soft-panel rounded-[1.5rem] p-4 mt-6">
+                    <div class="pt-6 mt-6 border-t" style="border-color: var(--line);">
                         <div class="flex items-center justify-between gap-4">
                             <div>
-                                <div class="font-bold" x-text="t('appearance')"></div>
-                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('appearanceDesc')"></div>
+                                <div class="font-bold text-sm" x-text="t('appearance')"></div>
+                                <div class="text-xs mt-0.5" style="color: var(--muted);" x-text="t('appearanceDesc')"></div>
                             </div>
-                            <button @click="isDark = !isDark; toggleTheme()" class="btn-secondary !py-2.5 !px-3 min-w-[92px]">
+                            <button @click="isDark = !isDark; toggleTheme()" class="btn-secondary !py-2 !px-3 !text-xs min-w-[80px]">
                                 <i class="fa-solid" :class="isDark ? 'fa-moon' : 'fa-sun'"></i>
                                 <span x-text="isDark ? t('dark') : t('light')"></span>
                             </button>
                         </div>
                         <div class="mt-4">
-                            <label class="text-sm font-bold block mb-2" x-text="t('language')"></label>
-                            <select x-model="language" @change="setLanguage(language)" class="select-shell">
+                            <label class="text-xs font-bold block mb-1.5" x-text="t('language')"></label>
+                            <select x-model="language" @change="setLanguage(language)" class="select-shell !min-h-[2.5rem] !py-1.5 !px-3 !text-sm">
                                 <option value="en">English</option>
                                 <option value="ar">العربية</option>
                             </select>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 grid grid-cols-2 gap-3">
-                        <div class="soft-panel rounded-2xl p-4">
-                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('history')"></div>
-                            <div class="title-display text-2xl font-bold mt-2" x-text="history.length"></div>
-                            <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('savedItems')"></div>
-                        </div>
-                        <div class="soft-panel rounded-2xl p-4">
-                            <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('queue')"></div>
-                            <div class="title-display text-2xl font-bold mt-2" x-text="uniqueBatchUrls.length"></div>
-                            <div class="text-sm mt-1" style="color: var(--muted);" x-text="t('batchLinks')"></div>
                         </div>
                     </div>
 
@@ -507,41 +496,36 @@
                                         </button>
                                     </div>
 
-                                    <div class="grid md:grid-cols-3 gap-3 mt-5">
-                                        <div class="metric-chip px-4 py-3">
+                                    <div class="grid md:grid-cols-3 gap-3 mt-5 py-4 border-t border-b" style="border-color: var(--line);">
+                                        <div class="px-2">
                                             <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('format')"></div>
-                                            <div class="font-bold mt-1" x-text="settings.format === 'audio' ? 'Audio / MP3' : 'Video / MP4'"></div>
+                                            <div class="font-bold mt-1 text-sm text-white" x-text="settings.format === 'audio' ? 'Audio / MP3' : 'Video / MP4'"></div>
                                         </div>
-                                        <div class="metric-chip px-4 py-3">
+                                        <div class="px-2 md:border-l" style="border-color: var(--line);">
                                             <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('quality')"></div>
-                                            <div class="font-bold mt-1" x-text="settings.quality"></div>
+                                            <div class="font-bold mt-1 text-sm text-white" x-text="settings.quality"></div>
                                         </div>
-                                        <div class="metric-chip px-4 py-3">
+                                        <div class="px-2 md:border-l" style="border-color: var(--line);">
                                             <div class="text-xs uppercase tracking-[0.2em]" style="color: var(--muted);" x-text="t('status')"></div>
-                                            <div class="font-bold mt-1" x-text="downloadStatus === 'idle' ? t('ready') : downloadMessage || t('working')"></div>
+                                            <div class="font-bold mt-1 text-sm text-white" x-text="downloadStatus === 'idle' ? t('ready') : downloadMessage || t('working')"></div>
                                         </div>
                                     </div>
 
-                                    <div class="mt-5 soft-panel rounded-2xl p-4">
-                                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
+                                    <div class="mt-5 py-1">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                             <div>
-                                                <div class="font-bold" x-text="t('networkMode')"></div>
-                                                <div class="text-sm mt-1" style="color: var(--muted);" x-text="networkModeLabel"></div>
+                                                <div class="font-bold text-sm" x-text="t('networkMode')"></div>
+                                                <div class="text-xs mt-0.5" style="color: var(--muted);" x-text="networkModeLabel"></div>
                                             </div>
-                                            <select x-model="settings.network_mode" class="select-shell lg:max-w-[260px]">
-                                                <option value="stable">Stable connection</option>
-                                                <option value="balanced">Balanced</option>
-                                                <option value="turbo">Turbo fragments</option>
-                                                <option value="data_saver">Data saver</option>
-                                            </select>
-                                        </div>
-                                        <div class="grid md:grid-cols-4 gap-2">
-                                            <template x-for="mode in networkModes" :key="mode.id">
-                                                <button @click="settings.network_mode = mode.id" class="btn-secondary !py-2.5 text-sm"
-                                                        :style="settings.network_mode === mode.id ? 'background: var(--accent-soft); border-color: rgba(255,145,77,0.28);' : ''">
-                                                    <i :class="mode.icon + ' mr-2'"></i><span x-text="mode.short"></span>
-                                                </button>
-                                            </template>
+                                            <div class="flex rounded-xl p-1" style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line);">
+                                                <template x-for="mode in networkModes" :key="mode.id">
+                                                    <button @click="settings.network_mode = mode.id" 
+                                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
+                                                            :style="settings.network_mode === mode.id ? 'background: var(--accent); color: #111827;' : 'color: var(--muted);'">
+                                                        <span x-text="mode.short"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -645,7 +629,7 @@
                                                 <input type="checkbox" x-model="settings.sponsorblock" class="hidden">
                                             </div>
                                         </label>
-
+ 
                                         <label class="flex items-start justify-between gap-4 cursor-pointer">
                                             <div>
                                                 <div class="font-bold" x-text="t('embedMetadata')"></div>
@@ -656,7 +640,7 @@
                                                 <input type="checkbox" x-model="settings.embed_metadata" class="hidden">
                                             </div>
                                         </label>
-
+ 
                                         <label class="flex items-start justify-between gap-4 cursor-pointer">
                                             <div>
                                                 <div class="font-bold" x-text="t('transcript')"></div>
@@ -665,6 +649,28 @@
                                             <div class="toggle-track" :class="settings.download_transcript ? 'active' : ''">
                                                 <div class="toggle-thumb"></div>
                                                 <input type="checkbox" x-model="settings.download_transcript" class="hidden">
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold">Smart Sync</div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);">Only download new videos (remembers history).</div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.download_archive ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.download_archive" class="hidden">
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start justify-between gap-4 cursor-pointer">
+                                            <div>
+                                                <div class="font-bold">Night Mode</div>
+                                                <div class="text-sm mt-1" style="color: var(--muted);">Delay queue processing until 2:00 AM.</div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.night_mode ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.night_mode" class="hidden">
                                             </div>
                                         </label>
                                     </div>
@@ -773,16 +779,43 @@
                                                 </template>
                                             </select>
                                         </div>
+
+                                        <label class="flex items-center justify-between gap-4 cursor-pointer mt-2">
+                                            <div>
+                                                <div class="font-bold text-sm">Smart Sync</div>
+                                                <div class="text-xs" style="color: var(--muted);">Only download new links</div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.download_archive ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.download_archive" class="hidden">
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-center justify-between gap-4 cursor-pointer mb-2">
+                                            <div>
+                                                <div class="font-bold text-sm">Night Mode</div>
+                                                <div class="text-xs" style="color: var(--muted);">Wait until 2:00 AM</div>
+                                            </div>
+                                            <div class="toggle-track" :class="settings.night_mode ? 'active' : ''">
+                                                <div class="toggle-thumb"></div>
+                                                <input type="checkbox" x-model="settings.night_mode" class="hidden">
+                                            </div>
+                                        </label>
+
                                         <button @click="startBatch()" :disabled="batch.status === 'running' || uniqueBatchUrls.length === 0" class="btn-main w-full">
                                             <i class="fa-solid fa-layer-group mr-2"></i>Start Batch
                                         </button>
-                                        <div class="soft-panel rounded-2xl p-4" x-show="history.length">
-                                            <div class="font-bold mb-3">Queue from history</div>
-                                            <div class="space-y-2 max-h-44 overflow-y-auto pr-1">
+
+                                        <div class="pt-4 border-t" style="border-color: var(--line);" x-show="history.length">
+                                            <div class="font-bold text-sm mb-3">Queue from history</div>
+                                            <div class="space-y-1.5 max-h-44 overflow-y-auto pr-1">
                                                 <template x-for="item in history.slice(0, 5)" :key="item.filepath">
-                                                    <button @click="addHistoryToBatch(item)" class="w-full text-left rounded-xl px-3 py-2 hover:bg-white/10 transition">
-                                                        <div class="font-semibold truncate text-sm" x-text="item.title"></div>
-                                                        <div class="text-xs truncate" style="color: var(--muted);" x-text="item.channel"></div>
+                                                    <button @click="addHistoryToBatch(item)" class="w-full text-left rounded-xl px-3 py-2 hover:bg-white/5 transition flex items-center justify-between gap-3">
+                                                        <div class="min-w-0 flex-1">
+                                                            <div class="font-semibold truncate text-sm text-white" x-text="item.title"></div>
+                                                            <div class="text-xs truncate" style="color: var(--muted);" x-text="item.channel"></div>
+                                                        </div>
+                                                        <i class="fa-solid fa-plus text-xs" style="color: var(--muted);"></i>
                                                     </button>
                                                 </template>
                                             </div>
@@ -1171,7 +1204,7 @@
                 presets: [
                     { id: 'best-video', name: 'Best Video', icon: 'fa-solid fa-clapperboard', settings: { format: 'video', quality: 'best', download_transcript: false, sponsorblock: false, embed_metadata: true } },
                     { id: 'archive', name: '1080 Archive', icon: 'fa-solid fa-box-archive', settings: { format: 'video', quality: '1080p', download_transcript: true, sponsorblock: false, embed_metadata: true } },
-                    { id: 'audio', name: 'Audio Only', icon: 'fa-solid fa-music', settings: { format: 'audio', quality: 'best', download_transcript: false, sponsorblock: false, embed_metadata: true } },
+                    { id: 'podcast', name: 'Podcast Mode', icon: 'fa-solid fa-podcast', settings: { format: 'audio', quality: 'best', download_transcript: false, sponsorblock: false, embed_metadata: true } },
                     { id: 'research', name: 'Research Pack', icon: 'fa-regular fa-file-lines', settings: { format: 'video', quality: '720p', download_transcript: true, sponsorblock: true, embed_metadata: true } },
                     { id: 'low-bandwidth', name: 'Low Bandwidth', icon: 'fa-solid fa-signal', settings: { format: 'video', quality: '360p', download_transcript: false, sponsorblock: true, embed_metadata: false, network_mode: 'data_saver' } }
                 ],
@@ -1183,7 +1216,9 @@
                     download_transcript: false,
                     sponsorblock: false,
                     embed_metadata: false,
-                    network_mode: 'stable'
+                    network_mode: 'stable',
+                    download_archive: false,
+                    night_mode: false
                 },
                 serverSettings: { download_folder: '' },
 
